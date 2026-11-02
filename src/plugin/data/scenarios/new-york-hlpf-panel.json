@@ -1,0 +1,14 @@
+{
+ "scenario": "new-york-hlpf-panel",
+ "request_text": "I'm speaking on a High-level Political Forum panel in New York. The ticket is being issued 17 days out, well within the 16-day rule, and the nonstop is over fifteen hours, so business is clearly fine.",
+ "request_date": "2027-06-22",
+ "booking_date": "2027-06-25",
+ "traveler_id": "T315",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "NBO",
+ "destination": "JFK",
+ "departure_date": "2027-07-12",
+ "proposed_itinerary_id": "I642",
+ "proposed_cabin": "business"
+}

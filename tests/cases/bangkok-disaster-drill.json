@@ -1,0 +1,21 @@
+{
+ "scenario": "bangkok-disaster-drill",
+ "note": "Business on a 600-min nonstop with the request exactly 21 days ahead: on time.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "treats exactly 21 days as late",
+   "change": {
+    "violations": [
+     "LATE_REQUEST_ABOVE_ECONOMY"
+    ],
+    "compliant": false
+   },
+   "reason": "late-request-above-economy-correct"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "scenario": "bangkok-statistics-keynote",
+ "request_text": "I'm giving the keynote at the ESCAP Committee on Statistics. Neither flight is long on its own, I know, but with the Dubai connection it's a long night, so I've asked for business. Is that within the rules?",
+ "request_date": "2027-01-27",
+ "booking_date": "2027-02-06",
+ "traveler_id": "T303",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "ADD",
+ "destination": "BKK",
+ "departure_date": "2027-03-08",
+ "proposed_itinerary_id": "I884",
+ "proposed_cabin": "business"
+}

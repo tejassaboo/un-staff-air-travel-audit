@@ -1,0 +1,22 @@
+{
+ "scenario": "kabul-mission-handover",
+ "note": "A 720-min layover still resumes within 12 hours: one part, 330 + 120 + 240 = 690 >= 660.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "splits the journey at exactly 720 min",
+   "change": {
+    "entitled_cabin": "economy",
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT"
+    ],
+    "compliant": false
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

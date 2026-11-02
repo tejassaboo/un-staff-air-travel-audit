@@ -1,0 +1,22 @@
+{
+ "scenario": "bangkok-statistics-keynote",
+ "note": "220 + 80 + 360 = 660 combined minutes: exactly the business threshold.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "treats 660 as short of eleven hours",
+   "change": {
+    "entitled_cabin": "economy",
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT"
+    ],
+    "compliant": false
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

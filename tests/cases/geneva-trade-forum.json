@@ -1,0 +1,21 @@
+{
+ "scenario": "geneva-trade-forum",
+ "note": "Ticket issued 15 days before departure: LATE_ARRANGEMENT, even for the cheapest economy fare.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "LATE_ARRANGEMENT"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "excuses the late ticket because it is cheap",
+   "change": {
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "late-arrangement-correct"
+  }
+ ]
+}

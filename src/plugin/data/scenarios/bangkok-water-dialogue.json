@@ -1,0 +1,14 @@
+{
+ "scenario": "bangkok-water-dialogue",
+ "request_text": "I'm presenting at the Asia-Pacific water dialogue. Sorry the request went in late! To keep the budget down I'm happy to fly economy on the Lotus Sky nonstop rather than business.",
+ "request_date": "2027-07-28",
+ "booking_date": "2027-07-30",
+ "traveler_id": "T317",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "GVA",
+ "destination": "BKK",
+ "departure_date": "2027-08-16",
+ "proposed_itinerary_id": "I283",
+ "proposed_cabin": "economy"
+}

@@ -1,0 +1,32 @@
+{
+ "scenario": "geneva-council-session",
+ "note": "Single leg exactly 540 min gives business; the cheaper three-leg route is 580 min slower than the nonstop, so it never counts.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "reads a 540-min nonstop as under nine hours",
+   "change": {
+    "entitled_cabin": "economy",
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT"
+    ],
+    "compliant": false
+   },
+   "reason": "entitled-cabin-correct"
+  },
+  {
+   "why": "flags the cheaper route that fails the time rule",
+   "change": {
+    "violations": [
+     "ROUTE_NOT_LEAST_COSTLY"
+    ],
+    "compliant": false
+   },
+   "reason": "route-not-least-costly-correct"
+  }
+ ]
+}

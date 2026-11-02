@@ -1,0 +1,14 @@
+{
+ "scenario": "mogadishu-field-mission",
+ "request_text": "I'm joining a political mission assessment in Mogadishu. Counting the night in Doha it's a 23-hour journey, which is twice the eleven hours in the rules, so business all the way, please. The transit hotel is the Corniche Pearl.",
+ "request_date": "2027-04-04",
+ "booking_date": "2027-04-12",
+ "traveler_id": "T307",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "GVA",
+ "destination": "MGQ",
+ "departure_date": "2027-05-03",
+ "proposed_itinerary_id": "I758",
+ "proposed_cabin": "business"
+}

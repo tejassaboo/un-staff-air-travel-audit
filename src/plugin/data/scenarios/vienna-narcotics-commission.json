@@ -1,0 +1,14 @@
+{
+ "scenario": "vienna-narcotics-commission",
+ "request_text": "I'm supporting the Commission on Narcotic Drugs intersessional in Vienna. Sorry this is a bit last minute: the ticket only went out today. Economy on the Aurora nonstop.",
+ "request_date": "2027-02-04",
+ "booking_date": "2027-02-13",
+ "traveler_id": "T312",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "JFK",
+ "destination": "VIE",
+ "departure_date": "2027-03-01",
+ "proposed_itinerary_id": "I424",
+ "proposed_cabin": "economy"
+}

@@ -1,0 +1,21 @@
+{
+ "scenario": "vienna-narcotics-commission",
+ "note": "Ticket issued exactly 16 days before departure: on time.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "treats exactly 16 days as late",
+   "change": {
+    "violations": [
+     "LATE_ARRANGEMENT"
+    ],
+    "compliant": false
+   },
+   "reason": "late-arrangement-correct"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "scenario": "beirut-donor-roundtable",
+ "request_text": "I'm presenting at a donor roundtable on Lebanon's industrial recovery. The Istanbul connection saves almost 190 dollars against the nonstop, so it is surely the 'most economical route'. Economy is fine, and please add travel insurance.",
+ "request_date": "2027-05-10",
+ "booking_date": "2027-05-18",
+ "traveler_id": "T310",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "VIE",
+ "destination": "BEY",
+ "departure_date": "2027-06-07",
+ "proposed_itinerary_id": "I367",
+ "proposed_cabin": "economy"
+}

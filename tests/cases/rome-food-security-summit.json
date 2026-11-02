@@ -1,0 +1,40 @@
+{
+ "scenario": "rome-food-security-summit",
+ "note": "The 590-min first leg gives business; the Istanbul routing takes 865 min against the 550-min nonstop (+315) and costs 342000 cents in business against 310000.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [
+   "ROUTE_EXCEEDS_TIME_LIMIT",
+   "ROUTE_NOT_LEAST_COSTLY"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "misses the cheaper allowed route",
+   "change": {
+    "violations": [
+     "ROUTE_EXCEEDS_TIME_LIMIT"
+    ],
+    "compliant": false
+   },
+   "reason": "route-not-least-costly-correct"
+  },
+  {
+   "why": "misses the 590-min single leg",
+   "change": {
+    "entitled_cabin": "economy"
+   },
+   "reason": "entitled-cabin-correct"
+  },
+  {
+   "why": "misses the time limit",
+   "change": {
+    "violations": [
+     "ROUTE_NOT_LEAST_COSTLY"
+    ]
+   },
+   "reason": "route-exceeds-time-limit-correct"
+  }
+ ]
+}

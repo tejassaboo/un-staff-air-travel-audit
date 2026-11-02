@@ -1,0 +1,63 @@
+{
+ "scenario": "vienna-training-cohort",
+ "note": "Training participant (economy) proposes business via Dubai: 112000 cents in economy against 88100 on the Cairo route (+0, the most direct); the cheaper Istanbul route is +255 and never counts. Ticket 12 days and request 18 days ahead.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "CABIN_ABOVE_ENTITLEMENT",
+   "ROUTE_NOT_LEAST_COSTLY",
+   "LATE_ARRANGEMENT",
+   "LATE_REQUEST_ABOVE_ECONOMY"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "misses the pricier route",
+   "change": {
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT",
+     "LATE_ARRANGEMENT",
+     "LATE_REQUEST_ABOVE_ECONOMY"
+    ]
+   },
+   "reason": "route-not-least-costly-correct"
+  },
+  {
+   "why": "lists the violations out of canonical order",
+   "change": {
+    "violations": [
+     "LATE_REQUEST_ABOVE_ECONOMY",
+     "LATE_ARRANGEMENT",
+     "ROUTE_NOT_LEAST_COSTLY",
+     "CABIN_ABOVE_ENTITLEMENT"
+    ]
+   },
+   "reason": "violations-in-order"
+  },
+  {
+   "why": "lists a violation twice",
+   "change": {
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT",
+     "CABIN_ABOVE_ENTITLEMENT",
+     "ROUTE_NOT_LEAST_COSTLY",
+     "LATE_ARRANGEMENT",
+     "LATE_REQUEST_ABOVE_ECONOMY"
+    ]
+   },
+   "reason": "violations-unique"
+  },
+  {
+   "why": "forgets the late request",
+   "change": {
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT",
+     "ROUTE_NOT_LEAST_COSTLY",
+     "LATE_ARRANGEMENT"
+    ]
+   },
+   "reason": "late-request-above-economy-correct"
+  }
+ ]
+}

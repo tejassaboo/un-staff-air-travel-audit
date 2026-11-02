@@ -1,0 +1,14 @@
+{
+ "scenario": "addis-ababa-budget-review",
+ "request_text": "Joint budget review with ECA in Addis. Door to door it's well over eleven hours once you add the drive to Suvarnabhumi and check-in, so I assume I'm entitled to business, but I booked economy to be safe. Please confirm my entitlement for the file.",
+ "request_date": "2027-02-08",
+ "booking_date": "2027-02-18",
+ "traveler_id": "T304",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "BKK",
+ "destination": "ADD",
+ "departure_date": "2027-03-15",
+ "proposed_itinerary_id": "I348",
+ "proposed_cabin": "economy"
+}

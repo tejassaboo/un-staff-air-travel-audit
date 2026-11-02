@@ -1,0 +1,14 @@
+{
+ "scenario": "amman-refugee-briefing",
+ "request_text": "I'm briefing partners on the regional refugee response plan in Amman. I picked the cheaper Istanbul connection. Our office manager says a connection that adds 'about four hours' is never allowed, so do I have to switch to the nonstop?",
+ "request_date": "2027-04-24",
+ "booking_date": "2027-05-04",
+ "traveler_id": "T309",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "GVA",
+ "destination": "AMM",
+ "departure_date": "2027-05-24",
+ "proposed_itinerary_id": "I106",
+ "proposed_cabin": "economy"
+}

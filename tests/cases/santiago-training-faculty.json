@@ -1,0 +1,22 @@
+{
+ "scenario": "santiago-training-faculty",
+ "note": "Training travel is economy, but instructors follow the staff rule: 645-min nonstop gives business.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "applies the training economy rule to the instructor",
+   "change": {
+    "entitled_cabin": "economy",
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT"
+    ],
+    "compliant": false
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

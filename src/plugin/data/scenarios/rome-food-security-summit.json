@@ -1,0 +1,14 @@
+{
+ "scenario": "rome-food-security-summit",
+ "request_text": "I'm presenting DESA's food-systems outlook at a summit hosted by FAO in Rome. I'd like to route via Istanbul to keep my Taurus status. A colleague said any route is fine as long as the cabin is right.",
+ "request_date": "2027-09-09",
+ "booking_date": "2027-09-18",
+ "traveler_id": "T319",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "JFK",
+ "destination": "FCO",
+ "departure_date": "2027-10-11",
+ "proposed_itinerary_id": "I269",
+ "proposed_cabin": "business"
+}

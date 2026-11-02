@@ -1,0 +1,22 @@
+{
+ "scenario": "mogadishu-field-mission",
+ "note": "The 721-min night in Doha breaks the journey: parts of 360 and 300 min, neither qualifies.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "CABIN_ABOVE_ENTITLEMENT"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "adds the parts across the stopover (360 + 120 + 300)",
+   "change": {
+    "entitled_cabin": "business",
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

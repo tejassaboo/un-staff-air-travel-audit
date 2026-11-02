@@ -1,0 +1,22 @@
+{
+ "scenario": "nairobi-evaluation-consultant",
+ "note": "Consultants fly economy whatever the duration, even on an 840-min nonstop.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "CABIN_ABOVE_ENTITLEMENT"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "applies the staff nine-hour rule to a consultant",
+   "change": {
+    "entitled_cabin": "business",
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

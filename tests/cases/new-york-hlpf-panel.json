@@ -1,0 +1,32 @@
+{
+ "scenario": "new-york-hlpf-panel",
+ "note": "Business is entitled (940-min nonstop) but the request went in 20 days ahead: LATE_REQUEST_ABOVE_ECONOMY. The ticket at 17 days is on time.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [
+   "LATE_REQUEST_ABOVE_ECONOMY"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "checks only the 16-day ticket rule",
+   "change": {
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "late-request-above-economy-correct"
+  },
+  {
+   "why": "lets the late request lower the entitlement",
+   "change": {
+    "entitled_cabin": "economy",
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT",
+     "LATE_REQUEST_ABOVE_ECONOMY"
+    ]
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

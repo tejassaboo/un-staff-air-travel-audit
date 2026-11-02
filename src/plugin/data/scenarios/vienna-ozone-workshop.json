@@ -1,0 +1,14 @@
+{
+ "scenario": "vienna-ozone-workshop",
+ "request_text": "I'm facilitating a Montreal Protocol compliance workshop in Vienna. It's eleven hours and twenty minutes from wheels-up in Nairobi to landing in Vienna, the Cairo wait included, so business applies, right? Please also add a paid seat with extra legroom.",
+ "request_date": "2027-03-12",
+ "booking_date": "2027-03-19",
+ "traveler_id": "T305",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "NBO",
+ "destination": "VIE",
+ "departure_date": "2027-04-12",
+ "proposed_itinerary_id": "I784",
+ "proposed_cabin": "business"
+}

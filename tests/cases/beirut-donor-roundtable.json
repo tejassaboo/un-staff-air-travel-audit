@@ -1,0 +1,31 @@
+{
+ "scenario": "beirut-donor-roundtable",
+ "note": "The Istanbul connection takes 450 min against the 210-min nonstop: +240 is not < 240. It is the cheapest overall, so not ROUTE_NOT_LEAST_COSTLY.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "ROUTE_EXCEEDS_TIME_LIMIT"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "accepts the cheapest route as the most economical",
+   "change": {
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "route-exceeds-time-limit-correct"
+  },
+  {
+   "why": "also flags cost, though the proposal is cheaper than the only allowed route",
+   "change": {
+    "violations": [
+     "ROUTE_EXCEEDS_TIME_LIMIT",
+     "ROUTE_NOT_LEAST_COSTLY"
+    ]
+   },
+   "reason": "route-not-least-costly-correct"
+  }
+ ]
+}

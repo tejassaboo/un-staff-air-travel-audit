@@ -1,0 +1,14 @@
+{
+ "scenario": "panama-hub-retreat",
+ "request_text": "I'm leading a session at the UNDP regional hub retreat in Panama. The Pacific Condor routing stops in Lima and Bogota, just under two hours each time. There's a cheaper option via Miami too, but it eats most of the day. I'd like business on the Condor routing if I qualify.",
+ "request_date": "2027-03-05",
+ "booking_date": "2027-03-17",
+ "traveler_id": "T306",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "SCL",
+ "destination": "PTY",
+ "departure_date": "2027-04-19",
+ "proposed_itinerary_id": "I598",
+ "proposed_cabin": "business"
+}

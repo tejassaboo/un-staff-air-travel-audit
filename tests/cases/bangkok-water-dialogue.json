@@ -1,0 +1,28 @@
+{
+ "scenario": "bangkok-water-dialogue",
+ "note": "Entitled to business (620-min nonstop); economy proposed, so the 19-day request is no violation.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "flags the late request although economy is proposed",
+   "change": {
+    "violations": [
+     "LATE_REQUEST_ABOVE_ECONOMY"
+    ],
+    "compliant": false
+   },
+   "reason": "late-request-above-economy-correct"
+  },
+  {
+   "why": "reports the proposed cabin as the entitlement",
+   "change": {
+    "entitled_cabin": "economy"
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

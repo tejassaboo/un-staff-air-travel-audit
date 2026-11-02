@@ -1,0 +1,14 @@
+{
+ "scenario": "geneva-trade-forum",
+ "request_text": "I'm moderating a panel at the UNCTAD trade and development forum. It's the cheapest ticket on the route and I'm in economy, so being a day past the advance-purchase date shouldn't matter, should it?",
+ "request_date": "2027-02-26",
+ "booking_date": "2027-03-07",
+ "traveler_id": "T313",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "JFK",
+ "destination": "GVA",
+ "departure_date": "2027-03-22",
+ "proposed_itinerary_id": "I388",
+ "proposed_cabin": "economy"
+}

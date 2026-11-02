@@ -1,0 +1,74 @@
+[
+ {
+  "code": "A4",
+  "name": "Aurora Atlantic",
+  "us_flag_carrier": true,
+  "codeshare_partners": []
+ },
+ {
+  "code": "C3",
+  "name": "Cedar Crescent",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "D5",
+  "name": "Dune Pearl Airways",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "H3",
+  "name": "Highland Rift Airways",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "K2",
+  "name": "Kestrel Airways",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "L2",
+  "name": "Lumen Levant",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "L9",
+  "name": "Lotus Sky",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "M8",
+  "name": "Meridian Gulf",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "N7",
+  "name": "Nilegate Air",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "P5",
+  "name": "Pacific Condor",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "T6",
+  "name": "Taurus Anatolia",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "V4",
+  "name": "Andes Vista",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ }
+]

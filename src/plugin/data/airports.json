@@ -1,0 +1,162 @@
+[
+ {
+  "code": "ADD",
+  "city": "Addis Ababa",
+  "country": "ET",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Africa/Addis_Ababa"
+ },
+ {
+  "code": "AMM",
+  "city": "Amman",
+  "country": "JO",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Asia/Amman"
+ },
+ {
+  "code": "BEY",
+  "city": "Beirut",
+  "country": "LB",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Asia/Beirut"
+ },
+ {
+  "code": "BKK",
+  "city": "Bangkok",
+  "country": "TH",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Asia/Bangkok"
+ },
+ {
+  "code": "BOG",
+  "city": "Bogota",
+  "country": "CO",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "America/Bogota"
+ },
+ {
+  "code": "CAI",
+  "city": "Cairo",
+  "country": "EG",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Africa/Cairo"
+ },
+ {
+  "code": "DOH",
+  "city": "Doha",
+  "country": "QA",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Asia/Qatar"
+ },
+ {
+  "code": "DXB",
+  "city": "Dubai",
+  "country": "AE",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Asia/Dubai"
+ },
+ {
+  "code": "FCO",
+  "city": "Rome Fiumicino",
+  "country": "IT",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Europe/Rome"
+ },
+ {
+  "code": "GVA",
+  "city": "Geneva",
+  "country": "CH",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Europe/Zurich"
+ },
+ {
+  "code": "IST",
+  "city": "Istanbul",
+  "country": "TR",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Europe/Istanbul"
+ },
+ {
+  "code": "JFK",
+  "city": "New York JFK",
+  "country": "US",
+  "continental_us": true,
+  "us_50_states_dc": true,
+  "timezone": "America/New_York"
+ },
+ {
+  "code": "KBL",
+  "city": "Kabul",
+  "country": "AF",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Asia/Kabul"
+ },
+ {
+  "code": "LIM",
+  "city": "Lima",
+  "country": "PE",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "America/Lima"
+ },
+ {
+  "code": "MGQ",
+  "city": "Mogadishu",
+  "country": "SO",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Africa/Mogadishu"
+ },
+ {
+  "code": "MIA",
+  "city": "Miami",
+  "country": "US",
+  "continental_us": true,
+  "us_50_states_dc": true,
+  "timezone": "America/New_York"
+ },
+ {
+  "code": "NBO",
+  "city": "Nairobi",
+  "country": "KE",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Africa/Nairobi"
+ },
+ {
+  "code": "PTY",
+  "city": "Panama City",
+  "country": "PA",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "America/Panama"
+ },
+ {
+  "code": "SCL",
+  "city": "Santiago",
+  "country": "CL",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "America/Santiago"
+ },
+ {
+  "code": "VIE",
+  "city": "Vienna",
+  "country": "AT",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Europe/Vienna"
+ }
+]

@@ -1,0 +1,14 @@
+{
+ "scenario": "kabul-mission-handover",
+ "request_text": "I'm handing over a human rights monitoring portfolio in Kabul. There's a long overnight in Doha, I know. My section chief says any overnight stop resets the clock and I should fly economy, but I'd like you to check: I've proposed business.",
+ "request_date": "2027-04-14",
+ "booking_date": "2027-04-21",
+ "traveler_id": "T308",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "NBO",
+ "destination": "KBL",
+ "departure_date": "2027-05-10",
+ "proposed_itinerary_id": "I390",
+ "proposed_cabin": "business"
+}

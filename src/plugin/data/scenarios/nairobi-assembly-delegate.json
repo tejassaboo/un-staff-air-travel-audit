@@ -1,0 +1,14 @@
+{
+ "scenario": "nairobi-assembly-delegate",
+ "request_text": "I'm advising a delegation at the UN Environment Assembly. My colleague always flies business on this route, and the Kestrel nonstop is 8 hours 59 minutes, which is nine hours for any practical purpose. Business, please, and add the lounge pass.",
+ "request_date": "2027-01-27",
+ "booking_date": "2027-02-04",
+ "traveler_id": "T302",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "GVA",
+ "destination": "NBO",
+ "departure_date": "2027-02-26",
+ "proposed_itinerary_id": "I253",
+ "proposed_cabin": "business"
+}

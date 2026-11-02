@@ -1,0 +1,37 @@
+{
+ "scenario": "nairobi-assembly-delegate",
+ "note": "Single leg of 539 min is under 540: economy, so the proposed business is above entitlement.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "CABIN_ABOVE_ENTITLEMENT"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "rounds 539 min up to nine hours",
+   "change": {
+    "entitled_cabin": "business",
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "entitled-cabin-correct"
+  },
+  {
+   "why": "gets the entitlement right but forgets to flag the business proposal",
+   "change": {
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "cabin-above-entitlement-correct"
+  },
+  {
+   "why": "lists the violation but says compliant",
+   "change": {
+    "compliant": true
+   },
+   "reason": "compliant-matches-violations"
+  }
+ ]
+}

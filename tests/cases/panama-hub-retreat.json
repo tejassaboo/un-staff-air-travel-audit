@@ -1,0 +1,32 @@
+{
+ "scenario": "panama-hub-retreat",
+ "note": "Two 110-min connections, each under the per-connection cap: 210 + 110 + 190 + 110 + 80 = 700 >= 660. The cheap Miami routing is +305 min and never counts.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "caps all connections together at 120 (600 min)",
+   "change": {
+    "entitled_cabin": "economy",
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT"
+    ],
+    "compliant": false
+   },
+   "reason": "entitled-cabin-correct"
+  },
+  {
+   "why": "flags the cheaper Miami routing that fails the time rule",
+   "change": {
+    "violations": [
+     "ROUTE_NOT_LEAST_COSTLY"
+    ],
+    "compliant": false
+   },
+   "reason": "route-not-least-costly-correct"
+  }
+ ]
+}

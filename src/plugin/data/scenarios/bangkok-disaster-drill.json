@@ -1,0 +1,14 @@
+{
+ "scenario": "bangkok-disaster-drill",
+ "request_text": "I'm running a satellite-data exercise at the regional disaster drill in Bangkok. I submitted the request exactly three weeks out, and the Lotus Sky nonstop is ten hours. Business, please.",
+ "request_date": "2027-03-15",
+ "booking_date": "2027-03-18",
+ "traveler_id": "T314",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "VIE",
+ "destination": "BKK",
+ "departure_date": "2027-04-05",
+ "proposed_itinerary_id": "I113",
+ "proposed_cabin": "business"
+}

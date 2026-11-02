@@ -1,0 +1,22 @@
+{
+ "scenario": "vienna-ozone-workshop",
+ "note": "The 150-min Cairo layover counts as 120: 300 + 120 + 230 = 650 < 660, so economy (raw elapsed is 680).",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "CABIN_ABOVE_ENTITLEMENT"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "counts the whole 150-min layover",
+   "change": {
+    "entitled_cabin": "business",
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "scenario": "addis-ababa-budget-review",
+ "note": "360 + 80 + 219 = 659 combined minutes: one short of business; economy proposed, so compliant.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "accepts the traveller's door-to-door claim",
+   "change": {
+    "entitled_cabin": "business"
+   },
+   "reason": "entitled-cabin-correct"
+  }
+ ]
+}

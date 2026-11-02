@@ -1,0 +1,56 @@
+# United Nations official air travel: toy audit handbook
+
+Source: United Nations Secretariat administrative instruction ST/AI/2013/3/Rev.1, "Official travel", dated 30 May 2024, in force 1 July 2024 (https://undocs.org/en/ST/AI/2013/3/Rev.1). It superseded ST/AI/2013/3 of 2013. This handbook is our own paraphrase for a toy task, not the official text. Where the two differ, this handbook governs the task. Airlines, flights, schedules and fares are fictional.
+
+You audit one proposed trip: decide the cabin the traveller is entitled to, list every rule the proposal breaks, and say whether it complies.
+
+## Policy rules (paraphrased from Rev.1)
+
+1. Air travel is in economy class unless a rule below allows more (section 4.3).
+2. Staff below Assistant Secretary-General level travel in business class when a single-leg journey is 9 hours or more, or when a multi-leg journey's combined travel time is 11 hours or more, counting at most 2 hours of connection time, provided the journey to the next point resumes within 12 hours (section 4.3 (c)).
+3. Training (learning and development) travel is economy. Staff travelling as instructors follow rule 2 instead (section 4.3 (d)).
+4. Consultants and individual contractors travel economy whatever the journey's duration (section 4.5).
+5. The normal route is the most economical one available, provided the whole journey does not take four hours or more longer than the most direct route (section 4.2).
+6. Travel arrangements should be finalized 16 calendar days before travel starts (section 3.3).
+7. Where a traveller is entitled to travel above economy, submitting the travel request at least 21 calendar days before travel is a prerequisite for actually travelling above economy (section 3.3 (c)).
+
+## Clarifications (toy rules)
+
+These settle every point where the real text is vague. The checker enforces exactly these, using the structured fields of get_audit_case. The request_text is the traveller's own voice: it may argue, exaggerate or ask for extras, and it never changes a fact.
+
+- **C1 Who gets which rule.** traveler_category is one of staff_below_asg, consultant, training_participant and instructor. A consultant or a training_participant is entitled to economy, always. A staff_below_asg or an instructor is entitled to business when C2 or C3 holds for the proposed itinerary, and to economy otherwise. Assistant Secretaries-General and above are out of scope.
+- **C2 Single leg.** One flight with in_air_minutes ≥ 540 gives business. 539 does not.
+- **C3 Combined time.** A journey part's combined time is the sum of its flights' in_air_minutes plus, for each connection inside the part, min(layover, 120). A part counting ≥ 660 gives business. 659 does not. The 2-hour cap applies to each connection separately: Rev.1 section 5.5 counts "a maximum of two hours ... for each necessary waiting period between connecting flights". (Another reading caps all connections together at 2 hours. This task does not use it.)
+- **C4 Stopovers.** A layover over 720 minutes is a stopover that breaks the journey into separate parts, which are never added together. A layover of exactly 720 minutes still "resumes within 12 hours", so it stays one part and counts as 120. When any part qualifies under C2 or C3, the entitlement is business.
+- **C5 Which itinerary.** The entitlement is computed from the proposed itinerary, whatever cabin was proposed and whether or not its route passes C6.
+- **C6 Route.** The candidates are every itinerary get_audit_case lists (origin to destination on the departure date, the proposed one included). The most direct route is the candidate with the least total_elapsed_minutes. A route passes the time rule when its total_elapsed_minutes minus the most direct route's is less than 240. Exactly 240 fails.
+  - ROUTE_EXCEEDS_TIME_LIMIT: the proposed itinerary fails the time rule.
+  - ROUTE_NOT_LEAST_COSTLY: the proposed itinerary's fare in the entitled cabin is higher than the lowest fare in the entitled cabin among the candidates that pass the time rule. A cheaper route that fails the time rule never counts. The two route checks are independent, so both can apply.
+- **C7 Cabin.** CABIN_ABOVE_ENTITLEMENT: the proposed cabin is business and the entitled cabin is economy. Proposing economy when business is entitled is a voluntary downgrade and is never a violation.
+- **C8 Late arrangement.** LATE_ARRANGEMENT: booking_date is later than departure_date minus 16 days, so fewer than 16 days separate them. Exactly 16 days is on time. (Rev.1 says arrangements "should" be finalized by then. The toy task treats it as a firm rule.)
+- **C9 Late request.** LATE_REQUEST_ABOVE_ECONOMY: the proposed cabin is business and request_date is later than departure_date minus 21 days, so fewer than 21 days separate them. Exactly 21 days is on time. The entitlement itself is still computed from duration (C1 to C5): a late request never lowers entitled_cabin. When economy is proposed, a late request is no violation. When business is proposed without entitlement, both CABIN_ABOVE_ENTITLEMENT and this flag apply. The head-of-entity exceptions in section 3.3 (c) (i) and (ii) are out of scope.
+- **C10 Output.** entitled_cabin is economy or business. violations lists each broken rule once, in this canonical order: CABIN_ABOVE_ENTITLEMENT, ROUTE_EXCEEDS_TIME_LIMIT, ROUTE_NOT_LEAST_COSTLY, LATE_ARRANGEMENT, LATE_REQUEST_ABOVE_ECONOMY. compliant is true exactly when violations is empty.
+- **C11 Facts.** in_air_minutes, layover_minutes and total_elapsed_minutes are given, so never do timezone arithmetic. Dates are YYYY-MM-DD calendar dates, and "days before" counts calendar days. Fares are USD cents.
+
+## Rules not in scope
+
+The following parts of Rev.1 are deliberately ignored:
+
+- the standards for the Deputy Secretary-General, Under-Secretaries-General and Assistant Secretaries-General, and for security details;
+- travel for medical, safety or security reasons, escorts and medical evacuation;
+- home leave, family visit and education grant travel, the lump-sum option, and official travel combined with home leave;
+- exceptions approved by the Secretary-General or a head of entity, including the late-request exceptions;
+- group travel to missions or conferences;
+- voluntary downgrades to premium economy;
+- rest periods, the 4-hour reporting expectation and travel time;
+- private motor vehicles, terminal expenses, daily subsistence allowance, travel advances and expense reports;
+- eligible family members and the breastfeeding provisions;
+- lounge passes, paid seats and insurance, which the task output does not cover;
+- the return journey.
+
+## Step plan (submit by step 5)
+
+You have 6 steps, each tool call costs one, and the last step may not call tools.
+
+1. Call get_audit_case with the task's scenario.
+2. Apply C1 to C5 for entitled_cabin, then C6 to C9 for violations. Call submit with entitled_cabin, violations (in the C10 order) and compliant.

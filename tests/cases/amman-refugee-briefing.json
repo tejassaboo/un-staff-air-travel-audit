@@ -1,0 +1,21 @@
+{
+ "scenario": "amman-refugee-briefing",
+ "note": "The Istanbul connection takes 509 min against the 270-min nonstop: +239 < 240, allowed, and it is the cheapest.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "treats +239 min as four hours",
+   "change": {
+    "violations": [
+     "ROUTE_EXCEEDS_TIME_LIMIT"
+    ],
+    "compliant": false
+   },
+   "reason": "route-exceeds-time-limit-correct"
+  }
+ ]
+}
