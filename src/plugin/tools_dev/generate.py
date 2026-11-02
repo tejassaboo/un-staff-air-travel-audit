@@ -328,7 +328,7 @@ SCENARIOS = [
     },
     {
         "facts": trip(
-            "nairobi-evaluation-consultant", "T311", CONSULTANT, BUSINESS, "JFK", "NBO", "2027-06-14", 33, 25, "business",
+            "nairobi-interviewer", "T311", CONSULTANT, BUSINESS, "JFK", "NBO", "2027-06-14", 33, 25, "business",
             "I'm leading field interviews for an OIOS programme evaluation in Nairobi. It's a fourteen-hour nonstop, way "
             "past the nine-hour line, and staff on the same evaluation team fly business. Please book business and the "
             "lounge pass.",
@@ -409,7 +409,7 @@ SCENARIOS = [
     },
     {
         "facts": trip(
-            "santiago-training-faculty", "T316", INSTRUCTOR, TRAINING, "JFK", "SCL", "2027-08-02", 38, 28, "business",
+            "santiago-logistician", "T316", INSTRUCTOR, TRAINING, "JFK", "SCL", "2027-08-02", 38, 28, "business",
             "I'm teaching the supply-chain course for regional staff in Santiago. I know training travel is economy, "
             "but I'm on the faculty, not in the classroom. I've proposed business on the Pacific Condor nonstop.",
         ),
@@ -441,7 +441,7 @@ SCENARIOS = [
     },
     {
         "facts": trip(
-            "vienna-training-cohort", "T318", PARTICIPANT, TRAINING, "NBO", "VIE", "2027-09-06", 18, 12, "business",
+            "vienna-miles-collector", "T318", PARTICIPANT, TRAINING, "NBO", "VIE", "2027-09-06", 18, 12, "business",
             "I'm attending the three-week procurement certification course in Vienna. A colleague on the same course "
             "flies business via Dubai, and I'd like to collect Meridian miles, so please book me the same. Add the "
             "lounge pass too.",

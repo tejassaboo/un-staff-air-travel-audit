@@ -31,7 +31,7 @@ def test_tool_output_matches_the_fixtures_and_stays_small(scenario: str) -> None
 
 
 def test_the_tool_shows_no_answer() -> None:
-    text = json.dumps(plain_output(case_of("vienna-training-cohort")))
+    text = json.dumps(plain_output(case_of("vienna-miles-collector")))
     for leak in ("entitled", "violation", "compliant", "CABIN_ABOVE", "LATE_"):
         assert leak not in text
 

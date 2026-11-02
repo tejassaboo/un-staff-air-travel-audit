@@ -44,14 +44,14 @@ Each scenario sets one trap. Expected answers are hand-written in `tests/cases/`
 | `kabul-mission-handover` | A 720-min stopover stays one part: 330 + 120 + 240 = 690 | business | none |
 | `amman-refugee-briefing` | Cheaper connection +239 min over the nonstop | economy | none |
 | `beirut-donor-roundtable` | Cheaper connection +240 min over the nonstop | economy | `ROUTE_EXCEEDS_TIME_LIMIT` |
-| `nairobi-evaluation-consultant` | Consultant on an 840-min nonstop | economy | `CABIN_ABOVE_ENTITLEMENT` |
+| `nairobi-interviewer` | Consultant on an 840-min nonstop | economy | `CABIN_ABOVE_ENTITLEMENT` |
 | `vienna-narcotics-commission` | Ticket issued exactly 16 days ahead | economy | none |
 | `geneva-trade-forum` | Ticket issued 15 days ahead | economy | `LATE_ARRANGEMENT` |
 | `bangkok-disaster-drill` | Business request submitted exactly 21 days ahead | business | none |
 | `new-york-hlpf-panel` | Business request submitted 20 days ahead | business | `LATE_REQUEST_ABOVE_ECONOMY` |
-| `santiago-training-faculty` | Training trip, but the traveller is the instructor | business | none |
+| `santiago-logistician` | Training trip, but the traveller is the instructor | business | none |
 | `bangkok-water-dialogue` | Late request, but economy proposed (voluntary downgrade) | business | none |
-| `vienna-training-cohort` | Training participant, business via a pricier route, late on both dates | economy | `CABIN_ABOVE_ENTITLEMENT`, `ROUTE_NOT_LEAST_COSTLY`, `LATE_ARRANGEMENT`, `LATE_REQUEST_ABOVE_ECONOMY` |
+| `vienna-miles-collector` | Training participant, business via a pricier route, late on both dates | economy | `CABIN_ABOVE_ENTITLEMENT`, `ROUTE_NOT_LEAST_COSTLY`, `LATE_ARRANGEMENT`, `LATE_REQUEST_ABOVE_ECONOMY` |
 | `rome-food-security-summit` | Loyalty routing via Istanbul, +315 min and pricier | business | `ROUTE_EXCEEDS_TIME_LIMIT`, `ROUTE_NOT_LEAST_COSTLY` |
 
 ## Tools

@@ -1,5 +1,5 @@
 {
- "scenario": "nairobi-evaluation-consultant",
+ "scenario": "nairobi-interviewer",
  "note": "Consultants fly economy whatever the duration, even on an 840-min nonstop.",
  "expected": {
   "entitled_cabin": "economy",

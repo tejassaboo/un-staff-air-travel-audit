@@ -23,7 +23,7 @@ ORDER = [
     "late-arrangement-correct",
     "late-request-above-economy-correct",
 ]
-COHORT = case("vienna-training-cohort")["expected"]
+COHORT = case("vienna-miles-collector")["expected"]
 
 
 @pytest.mark.parametrize("scenario", SCENARIOS)
@@ -62,8 +62,8 @@ def test_every_reason_code_is_exercised_by_a_case() -> None:
         ("amman-refugee-briefing", {"violations": ["ROUTE_EXCEEDS_TIME_LIMIT"], "compliant": False}, ["listed but not broken", "+239 is < 240"]),
         ("geneva-trade-forum", {"violations": [], "compliant": True}, ["15 days before departure", "15 is not >= 16"]),
         ("new-york-hlpf-panel", {"violations": [], "compliant": True}, ["request submitted 20 days", "20 is not >= 21"]),
-        ("nairobi-evaluation-consultant", {"entitled_cabin": "business", "violations": [], "compliant": True}, ["a consultant travels economy"]),
-        ("vienna-training-cohort", {"violations": ["CABIN_ABOVE_ENTITLEMENT", "LATE_ARRANGEMENT", "LATE_REQUEST_ABOVE_ECONOMY"]}, ["costs 112000 cents in economy", "costs 88100 cents"]),
+        ("nairobi-interviewer", {"entitled_cabin": "business", "violations": [], "compliant": True}, ["a consultant travels economy"]),
+        ("vienna-miles-collector", {"violations": ["CABIN_ABOVE_ENTITLEMENT", "LATE_ARRANGEMENT", "LATE_REQUEST_ABOVE_ECONOMY"]}, ["costs 112000 cents in economy", "costs 88100 cents"]),
     ],
 )
 def test_messages_name_the_rule_and_its_numbers(scenario: str, change: dict, needles: list) -> None:
@@ -73,14 +73,14 @@ def test_messages_name_the_rule_and_its_numbers(scenario: str, change: dict, nee
 
 
 def test_a_failed_stage_leaves_later_stages_unchecked() -> None:
-    result = verdict("vienna-training-cohort", {**COHORT, "compliant": True})
+    result = verdict("vienna-miles-collector", {**COHORT, "compliant": True})
     states = {entry["id"]: entry["ok"] for entry in result["details"]["constraints"]}
     assert states["compliant-matches-violations"] is False
     assert all(states[identifier] is None for identifier in ORDER[4:])
 
 
 def test_a_message_counts_the_other_failures() -> None:
-    result = verdict("vienna-training-cohort", {**COHORT, "violations": [], "compliant": True})
+    result = verdict("vienna-miles-collector", {**COHORT, "violations": [], "compliant": True})
     assert result["message"].startswith("cabin-above-entitlement-correct: CABIN_ABOVE_ENTITLEMENT missing")
     assert result["message"].endswith("(+3 more)")
 
@@ -96,7 +96,7 @@ def test_a_message_counts_the_other_failures() -> None:
     ],
 )
 def test_incorrect_missing_and_inconsistent_answers(change: dict, reason: str) -> None:
-    result = verdict("vienna-training-cohort", {**COHORT, **change})
+    result = verdict("vienna-miles-collector", {**COHORT, **change})
     assert result["valid"] is False and result["message"].split(":")[0] == reason, result["message"]
 
 

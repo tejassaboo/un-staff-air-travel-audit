@@ -29,14 +29,14 @@ class UnScenario(Enum):
     KABUL_MISSION_HANDOVER = "kabul-mission-handover"
     AMMAN_REFUGEE_BRIEFING = "amman-refugee-briefing"
     BEIRUT_DONOR_ROUNDTABLE = "beirut-donor-roundtable"
-    NAIROBI_EVALUATION_CONSULTANT = "nairobi-evaluation-consultant"
+    NAIROBI_INTERVIEWER = "nairobi-interviewer"
     VIENNA_NARCOTICS_COMMISSION = "vienna-narcotics-commission"
     GENEVA_TRADE_FORUM = "geneva-trade-forum"
     BANGKOK_DISASTER_DRILL = "bangkok-disaster-drill"
     NEW_YORK_HLPF_PANEL = "new-york-hlpf-panel"
-    SANTIAGO_TRAINING_FACULTY = "santiago-training-faculty"
+    SANTIAGO_LOGISTICIAN = "santiago-logistician"
     BANGKOK_WATER_DIALOGUE = "bangkok-water-dialogue"
-    VIENNA_TRAINING_COHORT = "vienna-training-cohort"
+    VIENNA_MILES_COLLECTOR = "vienna-miles-collector"
     ROME_FOOD_SECURITY_SUMMIT = "rome-food-security-summit"
 
 

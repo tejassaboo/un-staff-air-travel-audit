@@ -1,5 +1,5 @@
 {
- "scenario": "santiago-training-faculty",
+ "scenario": "santiago-logistician",
  "note": "Training travel is economy, but instructors follow the staff rule: 645-min nonstop gives business.",
  "expected": {
   "entitled_cabin": "business",

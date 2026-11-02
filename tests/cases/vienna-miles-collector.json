@@ -1,5 +1,5 @@
 {
- "scenario": "vienna-training-cohort",
+ "scenario": "vienna-miles-collector",
  "note": "Training participant (economy) proposes business via Dubai: 112000 cents in economy against 88100 on the Cairo route (+0, the most direct); the cheaper Istanbul route is +255 and never counts. Ticket 12 days and request 18 days ahead.",
  "expected": {
   "entitled_cabin": "economy",
