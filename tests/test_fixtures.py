@@ -165,3 +165,16 @@ def test_scenarios_never_share_a_search() -> None:
 def test_gitignore_keeps_the_bundled_data() -> None:
     ignored = (ROOT / ".gitignore").read_text(encoding="utf-8").split()
     assert not any(pattern in ("*.json", "*.md", "data/", "src/") for pattern in ignored)
+
+
+def test_the_handbook_labels_its_departures_from_the_source() -> None:
+    handbook = (DATA / "handbook.md").read_text(encoding="utf-8")
+    for needle in (
+        "by analogy",  # the per-connection 2-hour cap borrows section 5.5, which governs rest periods
+        "Section 4.3 (c) itself does not say so",
+        "extends it to every business proposal",  # C9 reaches beyond 3.3 (c)'s "entitled" wording
+        "origin local time",  # which day a candidate leaves on
+        "every candidate offers both cabins",
+        "section 4.4",  # fares compared in the entitled cabin even on a voluntary downgrade
+    ):
+        assert needle in handbook, needle

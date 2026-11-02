@@ -175,3 +175,73 @@ def test_cross_policy_sanity_row_un() -> None:
 def test_the_proposed_itinerary_must_be_a_candidate() -> None:
     with pytest.raises(ValueError, match="not among its candidates"):
         oracle(world_of(("X1", [300], [], 1, 2)), scenario(proposed_itinerary_id="X9"))
+
+
+def test_a_consultant_proposing_business_late_breaks_three_rules() -> None:
+    # C1 gives economy whatever the duration; C7 and C9 both apply because business was proposed (C9 extends
+    # 3.3 (c) to every business proposal); C8 because the ticket is late too.
+    world = world_of(("X1", [840], [], 50000, 200000))
+    facts = scenario(traveler_category="consultant", request_date="2027-01-01", booking_date="2027-01-01")
+    assert oracle(world, facts) == {
+        "entitled_cabin": "economy",
+        "violations": ["CABIN_ABOVE_ENTITLEMENT", "LATE_ARRANGEMENT", "LATE_REQUEST_ABOVE_ECONOMY"],
+        "compliant": False,
+    }
+
+
+def test_an_entitled_late_request_in_economy_is_clean_but_in_business_is_flagged() -> None:
+    world = world_of(("X1", [840], [], 50000, 200000))
+    late = {"request_date": "2027-01-01", "booking_date": "2026-12-01"}
+    assert violations(world, scenario(traveler_category="instructor", **late)) == ["LATE_REQUEST_ABOVE_ECONOMY"]
+    assert violations(world, scenario(traveler_category="instructor", proposed_cabin="economy", **late)) == []
+
+
+def test_two_stopovers_leave_three_parts_and_the_middle_one_can_qualify() -> None:
+    world = world_of(("X1", [100, 330, 240, 100], [800, 100, 900], 50000, 200000))
+    assert [counted_minutes(part) for part in journey_parts(world, world["itineraries"]["X1"])] == [100, 670, 100]
+    assert entitled_cabin(world, scenario()) == "business"
+
+
+def test_a_121_minute_connection_counts_as_120_and_no_wait_outside_the_flights_counts() -> None:
+    world = world_of(("X1", [300, 240], [121], 50000, 200000))
+    assert counted_minutes(journey_parts(world, world["itineraries"]["X1"])[0]) == 660
+    assert entitled_cabin(world, scenario()) == "business"
+
+
+def test_a_voluntary_downgrade_still_compares_fares_in_the_entitled_cabin() -> None:
+    # Entitled business, economy proposed: X1 is the cheapest in economy but not in business (C6, section 4.4).
+    world = world_of(("X1", [600], [], 50000, 260000), ("X2", [610], [], 55000, 240000))
+    assert oracle(world, scenario(proposed_cabin="economy")) == {
+        "entitled_cabin": "business",
+        "violations": ["ROUTE_NOT_LEAST_COSTLY"],
+        "compliant": False,
+    }
+
+
+def test_the_only_allowed_route_is_least_costly_whatever_a_disallowed_route_costs() -> None:
+    world = world_of(("X1", [100, 100], [340], 40000, 150000), ("X2", [300], [], 60000, 220000))
+    assert violations(world, scenario(proposed_itinerary_id="X2", proposed_cabin="economy")) == []
+    assert violations(world, scenario(proposed_itinerary_id="X1", proposed_cabin="economy")) == ["ROUTE_EXCEEDS_TIME_LIMIT"]
+
+
+@pytest.mark.parametrize(
+    ("booking", "departure", "days"),
+    [
+        ("2027-02-13", "2027-03-01", 16),  # across a month end in a common year
+        ("2028-02-13", "2028-02-29", 16),  # up to a leap day
+        ("2028-02-14", "2028-03-01", 16),  # across a leap day
+        ("2026-12-26", "2027-01-11", 16),  # across a year end
+        ("2100-02-13", "2100-03-01", 16),  # 2100 is not a leap year
+        ("2027-02-14", "2027-03-01", 15),
+        ("2027-01-11", "2027-01-10", -1),  # a ticket issued after departure
+    ],
+)
+def test_calendar_days_across_month_year_and_leap_boundaries(booking: str, departure: str, days: int) -> None:
+    assert days_between(booking, departure) == days
+
+
+def test_the_day_count_ignores_the_itinerary_clock() -> None:
+    # Only the calendar dates matter: a 16-day gap across the year end is on time, 15 is late.
+    world = world_of(("X1", [300], [], 50000, 200000))
+    assert violations(world, scenario(booking_date="2026-12-25", proposed_cabin="economy")) == []
+    assert violations(world, scenario(booking_date="2026-12-26", proposed_cabin="economy")) == ["LATE_ARRANGEMENT"]

@@ -89,7 +89,7 @@ How it scores:
 - `violations` must follow the canonical order (the declaration order of `UnViolation`). Handbook C10, the field's description and the Enum all state it, so there is exactly one correct list; a wrong order fails `violations-in-order` and names the expected order.
 - The score is 1.0 when the audit is right and 0.0 otherwise. `details` holds every constraint with expected and actual values, the expected audit, and the facts behind it, as plain JSON.
 - Shape errors never reach the verifier, because NanoAgent's `build_output` refuses them first: a wrong type, an unknown Enum value, a missing or extra field, `null` for a required field.
-- The verifier is pure stdlib and never raises. An unexpected value becomes a `verifier-error` verdict.
+- The verifier is pure stdlib and never raises, not even on an unknown task or tool id. An unexpected value becomes a `verifier-error` verdict.
 - Tool outputs are also checked against the fixtures (`verify_output`).
 
 ## Validation

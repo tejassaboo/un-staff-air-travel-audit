@@ -79,7 +79,7 @@ class ScenarioInput(Output):
 @dataclass
 class Traveler(Output):
     traveler_id: Annotated[str, "Traveller id, e.g. T301"]
-    name: Annotated[str, "Full name"]
+    name: Annotated[str, "The traveller's full name"]
     department: Annotated[str, "UN entity and unit"]
     duty_station: Annotated[str, "The traveller's duty station or home base"]
 
@@ -88,8 +88,8 @@ class Traveler(Output):
 class Segment(Output):
     flight: Annotated[str, "Flight number, e.g. K2 101"]
     carrier: Annotated[str, "The (fictional) airline that flies it"]
-    origin: Annotated[str, "IATA code"]
-    destination: Annotated[str, "IATA code"]
+    origin: Annotated[str, "Origin airport IATA code"]
+    destination: Annotated[str, "Destination airport IATA code"]
     depart_local: Annotated[str, "YYYY-MM-DDTHH:MM, origin local time"]
     arrive_local: Annotated[str, "YYYY-MM-DDTHH:MM, destination local time"]
     in_air_minutes: Annotated[int, "This one flight's takeoff-to-landing minutes"]
@@ -99,16 +99,18 @@ class Segment(Output):
 class Itinerary(Output):
     itinerary_id: Annotated[str, "Itinerary id, e.g. I457"]
     segments: Annotated[list[Segment], "Flights in flying order"]
-    layover_minutes: Annotated[list[int], "Ground time between consecutive flights, in order; empty for a nonstop"]
-    total_elapsed_minutes: Annotated[int, "First takeoff to last landing, layovers included"]
-    fares_cents: Annotated[dict[UnCabin, int], "Ticket price per cabin, USD cents"]
+    layover_minutes: Annotated[
+        list[int], "Ground minutes between consecutive flights, in flying order; empty for a nonstop"
+    ]
+    total_elapsed_minutes: Annotated[int, "Minutes from first takeoff to last landing, layovers included"]
+    fares_cents: Annotated[dict[UnCabin, int], "Ticket price per cabin, USD cents; economy and business are always both offered"]
 
 
 @dataclass
 class AuditCaseOutput(Output):
     scenario: Annotated[UnScenario, "The scenario this case belongs to"]
     request_text: Annotated[str, "The traveller's own words; they may argue for things policy does not allow"]
-    traveler: Annotated[Traveler, "Who travels"]
+    traveler: Annotated[Traveler, "The traveller on this trip"]
     traveler_category: Annotated[
         TravelerCategory, "staff_below_asg, consultant (incl. individual contractors), training_participant or instructor"
     ]
@@ -120,14 +122,18 @@ class AuditCaseOutput(Output):
     booking_date: Annotated[str, "Day the travel arrangements were finalized (ticket issued), YYYY-MM-DD"]
     proposed_itinerary_id: Annotated[str, "The itinerary proposed for this trip; one of itineraries"]
     proposed_cabin: Annotated[UnCabin, "The cabin proposed for this trip"]
-    itineraries: Annotated[list[Itinerary], "Every itinerary from origin to destination on departure_date, by id"]
+    itineraries: Annotated[
+        list[Itinerary], "Every itinerary from origin to destination leaving on departure_date (origin local), sorted by id"
+    ]
 
 
 @dataclass
 class UnAuditOutput(Output):
     entitled_cabin: Annotated[UnCabin, "The cabin the traveller is entitled to on the proposed itinerary"]
     violations: Annotated[
-        list[UnViolation], "Every rule the proposed trip breaks, each once, in the listed order; empty when it complies"
+        list[UnViolation],
+        "Every rule the proposed trip breaks, each once, in UnViolation's declaration order (handbook C10); "
+        "empty when it complies",
     ]
     compliant: Annotated[bool, "true exactly when violations is empty"]
 

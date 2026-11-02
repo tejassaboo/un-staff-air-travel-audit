@@ -161,3 +161,20 @@ def test_the_reference_tool_output_is_checked_against_the_oracle() -> None:
     bad = verifier.verify_output("compute_audit", arguments("panama-hub-retreat"), reference("mogadishu-field-mission"), ".")
     assert good["valid"] is True and bad["valid"] is False
     assert verifier.verify_input("get_audit_case", arguments("panama-hub-retreat"))["valid"] is True
+
+
+def test_an_unknown_task_or_tool_id_is_a_failed_verdict_not_an_exception() -> None:
+    gold = build_output(case("kabul-mission-handover")["expected"], UnAuditOutput)
+    for result in (
+        verifier.verify_task("audit-trip", arguments("kabul-mission-handover"), gold, None, "."),
+        verifier.verify_input("get_case", arguments("kabul-mission-handover")),
+        verifier.verify_output("get_case", None, None, "."),
+    ):
+        assert result["valid"] is False and result["message"].startswith("verifier-error")
+        json.dumps(result)
+
+
+def test_an_unknown_scenario_is_a_failed_verdict_not_an_exception() -> None:
+    gold = case("kabul-mission-handover")["expected"]
+    result = verifier.verify_task(TASK, {"scenario": "atlantis-retreat"}, gold, None, ".")
+    assert result["valid"] is False and result["message"].startswith("verifier-error")
