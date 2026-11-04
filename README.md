@@ -1,5 +1,7 @@
 # UN Staff Air Travel Audit
 
+**No affiliation with the United Nations.**
+
 A `nanoagent.plugin/v0001` plugin. A model audits one proposed United Nations official trip under a toy
 handbook paraphrased from administrative instruction ST/AI/2013/3/Rev.1, "Official travel" (30 May 2024,
 in force 1 July 2024). It rules on the traveller's entitled cabin, lists every rule the proposal breaks,
