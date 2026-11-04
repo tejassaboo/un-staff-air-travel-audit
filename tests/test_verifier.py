@@ -23,7 +23,7 @@ ORDER = [
     "late-arrangement-correct",
     "late-request-above-economy-correct",
 ]
-COHORT = case("vienna-miles-collector")["expected"]
+COLLECTOR = case("vienna-miles-collector")["expected"]
 
 
 @pytest.mark.parametrize("scenario", SCENARIOS)
@@ -73,14 +73,14 @@ def test_messages_name_the_rule_and_its_numbers(scenario: str, change: dict, nee
 
 
 def test_a_failed_stage_leaves_later_stages_unchecked() -> None:
-    result = verdict("vienna-miles-collector", {**COHORT, "compliant": True})
+    result = verdict("vienna-miles-collector", {**COLLECTOR, "compliant": True})
     states = {entry["id"]: entry["ok"] for entry in result["details"]["constraints"]}
     assert states["compliant-matches-violations"] is False
     assert all(states[identifier] is None for identifier in ORDER[4:])
 
 
 def test_a_message_counts_the_other_failures() -> None:
-    result = verdict("vienna-miles-collector", {**COHORT, "violations": [], "compliant": True})
+    result = verdict("vienna-miles-collector", {**COLLECTOR, "violations": [], "compliant": True})
     assert result["message"].startswith("cabin-above-entitlement-correct: CABIN_ABOVE_ENTITLEMENT missing")
     assert result["message"].endswith("(+3 more)")
 
@@ -96,7 +96,7 @@ def test_a_message_counts_the_other_failures() -> None:
     ],
 )
 def test_incorrect_missing_and_inconsistent_answers(change: dict, reason: str) -> None:
-    result = verdict("vienna-miles-collector", {**COHORT, **change})
+    result = verdict("vienna-miles-collector", {**COLLECTOR, **change})
     assert result["valid"] is False and result["message"].split(":")[0] == reason, result["message"]
 
 
@@ -116,15 +116,15 @@ def test_without_a_pinned_reference_the_oracle_still_decides() -> None:
 @pytest.mark.parametrize(
     "raw",
     [
-        {**COHORT, "compliant": "false"},  # a string for a bool
-        {**COHORT, "compliant": 0},
-        {**COHORT, "entitled_cabin": "Economy"},  # wrong case
-        {**COHORT, "entitled_cabin": "premium_economy"},  # not a cabin of this policy
-        {**COHORT, "violations": ["LATE_BOOKING"]},  # unknown code
-        {**COHORT, "violations": "LATE_ARRANGEMENT"},  # a string, not a list
-        {**COHORT, "violations": None},  # null for a required list
-        {key: value for key, value in COHORT.items() if key != "compliant"},  # missing field
-        {**COHORT, "rationale": "late on both dates"},  # extra free-text field
+        {**COLLECTOR, "compliant": "false"},  # a string for a bool
+        {**COLLECTOR, "compliant": 0},
+        {**COLLECTOR, "entitled_cabin": "Economy"},  # wrong case
+        {**COLLECTOR, "entitled_cabin": "premium_economy"},  # not a cabin of this policy
+        {**COLLECTOR, "violations": ["LATE_BOOKING"]},  # unknown code
+        {**COLLECTOR, "violations": "LATE_ARRANGEMENT"},  # a string, not a list
+        {**COLLECTOR, "violations": None},  # null for a required list
+        {key: value for key, value in COLLECTOR.items() if key != "compliant"},  # missing field
+        {**COLLECTOR, "rationale": "late on both dates"},  # extra free-text field
         ["economy", [], True],  # not an object
     ],
 )

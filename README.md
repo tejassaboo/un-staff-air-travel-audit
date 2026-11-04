@@ -32,7 +32,7 @@ every candidate itinerary with its in-air, layover and elapsed minutes and its f
 `request_text` is the traveller's own voice, with distractors such as "my colleague always flies business
 on this route". The answer never depends on it.
 
-Each scenario sets one trap. Expected answers are hand-written in `tests/cases/`:
+Each scenario sets at least one trap. Expected answers are hand-written in `tests/cases/`:
 
 | Scenario | Trap | Entitled | Violations |
 |---|---|---|---|
