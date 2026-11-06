@@ -16,6 +16,14 @@
   "timezone": "Asia/Amman"
  },
  {
+  "code": "AMS",
+  "city": "Amsterdam",
+  "country": "NL",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Europe/Amsterdam"
+ },
+ {
   "code": "BEY",
   "city": "Beirut",
   "country": "LB",
@@ -48,6 +56,22 @@
   "timezone": "Africa/Cairo"
  },
  {
+  "code": "CDG",
+  "city": "Paris Charles de Gaulle",
+  "country": "FR",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Europe/Paris"
+ },
+ {
+  "code": "DEL",
+  "city": "Delhi",
+  "country": "IN",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Asia/Kolkata"
+ },
+ {
   "code": "DOH",
   "city": "Doha",
   "country": "QA",
@@ -70,6 +94,14 @@
   "continental_us": false,
   "us_50_states_dc": false,
   "timezone": "Europe/Rome"
+ },
+ {
+  "code": "FRA",
+  "city": "Frankfurt",
+  "country": "DE",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Europe/Berlin"
  },
  {
   "code": "GVA",
@@ -96,12 +128,28 @@
   "timezone": "America/New_York"
  },
  {
+  "code": "JNB",
+  "city": "Johannesburg",
+  "country": "ZA",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Africa/Johannesburg"
+ },
+ {
   "code": "KBL",
   "city": "Kabul",
   "country": "AF",
   "continental_us": false,
   "us_50_states_dc": false,
   "timezone": "Asia/Kabul"
+ },
+ {
+  "code": "LHR",
+  "city": "London Heathrow",
+  "country": "GB",
+  "continental_us": false,
+  "us_50_states_dc": false,
+  "timezone": "Europe/London"
  },
  {
   "code": "LIM",

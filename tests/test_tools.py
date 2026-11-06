@@ -14,7 +14,7 @@ import verifier
 from contract import AuditCaseOutput, ScenarioInput
 from plugin import get_audit_case
 
-MAX_OUTPUT_CHARS = 4000  # about 1k tokens: the transcript stays far from the hosted 65,536-token budget
+MAX_OUTPUT_CHARS = 6000  # about 1.5k tokens for 6 to 8 candidates: the transcript stays far from the hosted 65,536-token budget
 
 
 def case_of(scenario):
@@ -56,5 +56,5 @@ def test_the_mcp_server_serves_every_tool() -> None:
     names, answer, refused = anyio.run(session)
     assert names == ["compute_audit", "get_audit_case"]
     assert answer.isError is False and answer.structuredContent["traveler_category"] == "staff_below_asg"
-    assert len(answer.structuredContent["itineraries"]) == 3
+    assert len(answer.structuredContent["itineraries"]) == 7
     assert refused.isError is True

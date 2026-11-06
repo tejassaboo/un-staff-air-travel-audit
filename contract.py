@@ -38,6 +38,10 @@ class UnScenario(Enum):
     BANGKOK_WATER_DIALOGUE = "bangkok-water-dialogue"
     VIENNA_MILES_COLLECTOR = "vienna-miles-collector"
     ROME_FOOD_SECURITY_SUMMIT = "rome-food-security-summit"
+    BANGKOK_RESULTS_PROGRAMME = "bangkok-results-programme"
+    NAIROBI_PROCUREMENT_CLINIC = "nairobi-procurement-clinic"
+    GENEVA_STATISTICS_BRIEFING = "geneva-statistics-briefing"
+    MOGADISHU_LOGISTICS_SURVEY = "mogadishu-logistics-survey"
 
 
 class TravelerCategory(Enum):

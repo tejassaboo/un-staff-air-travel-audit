@@ -112,5 +112,29 @@
   "name": "Rafael Costa",
   "department": "DESA, Division for Sustainable Development Goals",
   "base_point": "New York"
+ },
+ {
+  "traveler_id": "T320",
+  "name": "Yusuf Abdallah",
+  "department": "UNON, Results-Based Management Unit",
+  "base_point": "Nairobi"
+ },
+ {
+  "traveler_id": "T321",
+  "name": "Beatrix Hoffmann",
+  "department": "UNIDO, Procurement Services (instructor)",
+  "base_point": "Vienna"
+ },
+ {
+  "traveler_id": "T322",
+  "name": "Mekdes Alemu",
+  "department": "ECA, Statistics Division",
+  "base_point": "Addis Ababa"
+ },
+ {
+  "traveler_id": "T323",
+  "name": "Jonas Pichler",
+  "department": "UNOV, Logistics Section",
+  "base_point": "Vienna"
  }
 ]

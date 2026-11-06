@@ -1,0 +1,14 @@
+{
+ "scenario": "nairobi-procurement-clinic",
+ "request_text": "I'm delivering the procurement certification clinic at the Nairobi campus. Flying through Dubai is a twelve-hour-plus day, so business, and I prefer Meridian Gulf for the lie-flat seat. The Doha routing is a bit cheaper, but it's twenty minutes shorter, so same difference, surely.",
+ "request_date": "2027-08-30",
+ "booking_date": "2027-09-09",
+ "traveler_id": "T321",
+ "traveler_category": "instructor",
+ "trip_purpose": "learning_and_development",
+ "origin": "VIE",
+ "destination": "NBO",
+ "departure_date": "2027-10-04",
+ "proposed_itinerary_id": "I449",
+ "proposed_cabin": "business"
+}

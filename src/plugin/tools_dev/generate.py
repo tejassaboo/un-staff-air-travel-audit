@@ -6,6 +6,13 @@ Each scenario's flights are written out by hand, because each one sets a trap fr
 TASKS_CONTEXT.md section 4, T3, with the Rev.1 decisions); the seed only scatters the itinerary ids, so the
 proposed itinerary is never simply the first or lowest id. Airlines, flight numbers, schedules and fares are
 fictional. Expected answers are not written here: they live in tests/cases/.
+
+Each scenario also carries filler routes (FILLERS), so that 6 to 8 candidates compete and the route rule is a
+real search. A filler can never change a hand-computed answer, and check_fillers() proves it by arithmetic
+alone: every filler is slower than the hand routes' most direct one, so the time rule judges the proposal the
+same, and a filler that itself passes the time rule costs more, in both cabins, than the cheapest hand route
+that passes it, so the least allowed fare is unchanged. Fillers that fail the time rule may be cheap: they
+are the decoys the handbook's C6 warns about.
 """
 
 import random
@@ -22,17 +29,23 @@ AIRPORTS = [
     # code, city, country, continental US, US 50 states + DC, IANA timezone
     ("ADD", "Addis Ababa", "ET", False, False, "Africa/Addis_Ababa"),
     ("AMM", "Amman", "JO", False, False, "Asia/Amman"),
+    ("AMS", "Amsterdam", "NL", False, False, "Europe/Amsterdam"),
     ("BEY", "Beirut", "LB", False, False, "Asia/Beirut"),
     ("BKK", "Bangkok", "TH", False, False, "Asia/Bangkok"),
     ("BOG", "Bogota", "CO", False, False, "America/Bogota"),
     ("CAI", "Cairo", "EG", False, False, "Africa/Cairo"),
+    ("CDG", "Paris Charles de Gaulle", "FR", False, False, "Europe/Paris"),
+    ("DEL", "Delhi", "IN", False, False, "Asia/Kolkata"),
     ("DOH", "Doha", "QA", False, False, "Asia/Qatar"),
     ("DXB", "Dubai", "AE", False, False, "Asia/Dubai"),
     ("FCO", "Rome Fiumicino", "IT", False, False, "Europe/Rome"),
+    ("FRA", "Frankfurt", "DE", False, False, "Europe/Berlin"),
     ("GVA", "Geneva", "CH", False, False, "Europe/Zurich"),
     ("IST", "Istanbul", "TR", False, False, "Europe/Istanbul"),
     ("JFK", "New York JFK", "US", True, True, "America/New_York"),
+    ("JNB", "Johannesburg", "ZA", False, False, "Africa/Johannesburg"),
     ("KBL", "Kabul", "AF", False, False, "Asia/Kabul"),
+    ("LHR", "London Heathrow", "GB", False, False, "Europe/London"),
     ("LIM", "Lima", "PE", False, False, "America/Lima"),
     ("MGQ", "Mogadishu", "SO", False, False, "Africa/Mogadishu"),
     ("MIA", "Miami", "US", True, True, "America/New_York"),
@@ -45,8 +58,10 @@ AIRPORTS = [
 CARRIERS = [
     # code, fictional name, US flag carrier, code-share partners (unused by this policy)
     ("A4", "Aurora Atlantic", True, []),
+    ("B7", "Boreal Wings", False, []),
     ("C3", "Cedar Crescent", False, []),
     ("D5", "Dune Pearl Airways", False, []),
+    ("E9", "Elbe Express", False, []),
     ("H3", "Highland Rift Airways", False, []),
     ("K2", "Kestrel Airways", False, []),
     ("L2", "Lumen Levant", False, []),
@@ -54,6 +69,7 @@ CARRIERS = [
     ("M8", "Meridian Gulf", False, []),
     ("N7", "Nilegate Air", False, []),
     ("P5", "Pacific Condor", False, []),
+    ("S2", "Savanna Air", False, []),
     ("T6", "Taurus Anatolia", False, []),
     ("V4", "Andes Vista", False, []),
 ]
@@ -79,6 +95,10 @@ TRAVELERS = [
     ("T317", "Felix Wagner", "UNECE, Water Convention Secretariat", "Geneva"),
     ("T318", "Daniel Okoro", "DOS, Logistics Division", "Nairobi"),
     ("T319", "Rafael Costa", "DESA, Division for Sustainable Development Goals", "New York"),
+    ("T320", "Yusuf Abdallah", "UNON, Results-Based Management Unit", "Nairobi"),
+    ("T321", "Beatrix Hoffmann", "UNIDO, Procurement Services (instructor)", "Vienna"),
+    ("T322", "Mekdes Alemu", "ECA, Statistics Division", "Addis Ababa"),
+    ("T323", "Jonas Pichler", "UNOV, Logistics Section", "Vienna"),
 ]
 
 
@@ -86,6 +106,39 @@ def route(first_depart_local, *legs, fares):
     """An itinerary spec: its first flight leaves at ``first_depart_local``; each leg is
     (flight, carrier, origin, destination, in-air minutes, minutes on the ground before it)."""
     return {"first": first_depart_local, "legs": legs, "fares": fares}
+
+
+def filler(first_depart_local, *legs, fares):
+    """A filler route, as route() but with each leg (carrier, origin, destination, in-air minutes, minutes on the
+    ground before it): build() numbers its flights and check_fillers() proves it cannot change the answer."""
+    return {"first": first_depart_local, "legs": tuple((None, *leg) for leg in legs), "fares": fares, "filler": True}
+
+
+def elapsed(spec):
+    """A route spec's total elapsed minutes: its in-air minutes plus its layovers."""
+    return sum(leg[4] + leg[5] for leg in spec["legs"])
+
+
+def check_fillers(scenario_id, hand, fillers):
+    """Raise unless every filler leaves the hand-computed answer alone (see the module docstring), and the whole
+    pool keeps one most direct route, no fare ties, and the same fare order in both cabins."""
+    direct = min(elapsed(spec) for spec in hand)
+    allowed = [spec for spec in hand if elapsed(spec) - direct < 240]
+    least = tuple(min(spec["fares"][cabin] for spec in allowed) for cabin in (0, 1))
+    for spec in fillers:
+        extra = elapsed(spec) - direct
+        if extra <= 0:
+            raise ValueError(f"{scenario_id}: a filler ({elapsed(spec)} min) is as direct as the hand routes ({direct})")
+        if extra < 240 and not (spec["fares"][0] > least[0] and spec["fares"][1] > least[1]):
+            raise ValueError(f"{scenario_id}: an allowed filler {spec['fares']} undercuts the least allowed hand fare {least}")
+    pool = [*hand, *fillers]
+    if len({elapsed(spec) for spec in pool}) != len(pool):
+        raise ValueError(f"{scenario_id}: two candidates take the same time")
+    for cabin in (0, 1):
+        if len({spec["fares"][cabin] for spec in pool}) != len(pool):
+            raise ValueError(f"{scenario_id}: a fare tie in cabin {cabin}")
+    if sorted(pool, key=lambda spec: spec["fares"][0]) != sorted(pool, key=lambda spec: spec["fares"][1]):
+        raise ValueError(f"{scenario_id}: candidates rank differently in economy and in business")
 
 
 def trip(scenario, traveler, category, purpose, origin, destination, departure, request_days, booking_days, cabin, text):
@@ -489,7 +542,261 @@ SCENARIOS = [
             ),
         ],
     },
+    {
+        "facts": trip(
+            "bangkok-results-programme", "T320", STAFF, TRAINING, "NBO", "BKK", "2027-09-20", 30, 22, "business",
+            "I've been nominated for the two-week results-based management programme at the ESCAP campus in Bangkok. "
+            "The Lotus Sky nonstop is nine hours twenty, comfortably over the nine-hour line, and I'm a regular staff "
+            "member, not a consultant, so business should be automatic. Please confirm.",
+        ),
+        "routes": [
+            route("2027-09-20T23:40", ("L9 977", "L9", "NBO", "BKK", 560, 0), fares=(84200, 318000)),
+            route(
+                "2027-09-20T20:10",
+                ("M8 722", "M8", "NBO", "DXB", 300, 0),
+                ("M8 376", "M8", "DXB", "BKK", 360, 110),
+                fares=(89600, 337000),
+            ),
+        ],
+    },
+    {
+        "facts": trip(
+            "nairobi-procurement-clinic", "T321", INSTRUCTOR, TRAINING, "VIE", "NBO", "2027-10-04", 35, 25, "business",
+            "I'm delivering the procurement certification clinic at the Nairobi campus. Flying through Dubai is a "
+            "twelve-hour-plus day, so business, and I prefer Meridian Gulf for the lie-flat seat. The Doha routing is a "
+            "bit cheaper, but it's twenty minutes shorter, so same difference, surely.",
+        ),
+        "routes": [
+            route(
+                "2027-10-04T10:30",
+                ("M8 130", "M8", "VIE", "DXB", 330, 0),
+                ("M8 727", "M8", "DXB", "NBO", 300, 130),
+                fares=(91400, 312000),
+            ),
+            route(
+                "2027-10-04T11:15",
+                ("D5 48", "D5", "VIE", "DOH", 320, 0),
+                ("D5 1321", "D5", "DOH", "NBO", 310, 110),
+                fares=(85700, 289000),
+            ),
+            route(
+                "2027-10-04T12:00",
+                ("T6 1888", "T6", "VIE", "IST", 140, 0),
+                ("T6 609", "T6", "IST", "NBO", 390, 95),
+                fares=(88300, 298000),
+            ),
+        ],
+    },
+    {
+        "facts": trip(
+            "geneva-statistics-briefing", "T322", STAFF, BUSINESS, "ADD", "GVA", "2027-11-08", 28, 20, "business",
+            "I'm briefing the Statistical Commission's bureau in Geneva on the African census round. Addis to Istanbul "
+            "is just under five hours, the connection is two hours and a minute, then four hours to Geneva: that adds up "
+            "to eleven hours of travel, so I've proposed business on Taurus Anatolia.",
+        ),
+        "routes": [
+            route(
+                "2027-11-08T01:30",
+                ("T6 702", "T6", "ADD", "IST", 299, 0),
+                ("T6 1919", "T6", "IST", "GVA", 240, 121),
+                fares=(71500, 262000),
+            ),
+            route(
+                "2027-11-08T02:15",
+                ("N7 870", "N7", "ADD", "CAI", 240, 0),
+                ("N7 765", "N7", "CAI", "GVA", 245, 150),
+                fares=(76800, 281000),
+            ),
+        ],
+    },
+    {
+        "facts": trip(
+            "mogadishu-logistics-survey", "T323", STAFF, BUSINESS, "VIE", "MGQ", "2028-03-10", 21, 16, "business",
+            "I'm surveying warehouse capacity for the support office in Mogadishu. Vienna to Dubai, on to Nairobi, an "
+            "overnight there and the morning hop to Mogadishu. I filed the request on 18 February and the ticket was "
+            "issued on the 23rd, so with the leap day I make that three weeks and sixteen days exactly. Business, please.",
+        ),
+        "routes": [
+            route(
+                "2028-03-10T09:50",
+                ("M8 132", "M8", "VIE", "DXB", 330, 0),
+                ("M8 729", "M8", "DXB", "NBO", 300, 100),
+                ("K2 455", "K2", "NBO", "MGQ", 100, 780),
+                fares=(124800, 438000),
+            ),
+            route(
+                "2028-03-10T10:20",
+                ("D5 50", "D5", "VIE", "DOH", 320, 0),
+                ("D5 1273", "D5", "DOH", "MGQ", 300, 1000),
+                fares=(131500, 461000),
+            ),
+            route(
+                "2028-03-10T07:05",
+                ("N7 605", "N7", "VIE", "CAI", 200, 0),
+                ("N7 917", "N7", "CAI", "MGQ", 320, 1200),
+                fares=(128900, 452000),
+            ),
+        ],
+    },
 ]
+
+# Filler candidates per scenario, each leg (carrier, origin, destination, in-air minutes, minutes on the ground
+# before it); check_fillers() proves none can change the hand-computed answer. Fares are (economy, business) cents.
+FILLERS = {
+    "geneva-council-session": [
+        filler("2027-02-22T07:30", ("H3", "NBO", "ADD", 115, 0), ("H3", "ADD", "GVA", 410, 95), fares=(101900, 374000)),
+        filler("2027-02-22T23:00", ("E9", "NBO", "FRA", 530, 0), ("E9", "FRA", "GVA", 60, 90), fares=(108800, 402000)),
+        filler("2027-02-22T04:30", ("T6", "NBO", "IST", 400, 0), ("T6", "IST", "GVA", 215, 110), fares=(112600, 418000)),
+        filler("2027-02-22T16:45", ("M8", "NBO", "DXB", 300, 0), ("M8", "DXB", "GVA", 410, 130), fares=(84900, 312000)),
+        filler("2027-02-22T18:20", ("D5", "NBO", "DOH", 310, 0), ("D5", "DOH", "GVA", 390, 120), fares=(76200, 285000)),
+    ],
+    "nairobi-assembly-delegate": [
+        filler("2027-02-26T07:20", ("T6", "GVA", "IST", 190, 0), ("T6", "IST", "NBO", 390, 100), fares=(105400, 384000)),
+        filler("2027-02-26T14:50", ("D5", "GVA", "DOH", 360, 0), ("D5", "DOH", "NBO", 310, 110), fares=(88900, 322000)),
+        filler("2027-02-26T13:30", ("M8", "GVA", "DXB", 375, 0), ("M8", "DXB", "NBO", 290, 120), fares=(92600, 338000)),
+        filler("2027-02-26T08:10", ("E9", "GVA", "FRA", 60, 0), ("E9", "FRA", "NBO", 500, 95), fares=(99800, 361000)),
+        filler("2027-02-26T06:45", ("B7", "GVA", "LHR", 100, 0), ("B7", "LHR", "NBO", 520, 120), fares=(110200, 399000)),
+    ],
+    "bangkok-statistics-keynote": [
+        filler("2027-03-08T03:20", ("T6", "ADD", "IST", 300, 0), ("T6", "IST", "BKK", 560, 95), fares=(78300, 276000)),
+        filler("2027-03-08T07:30", ("H3", "ADD", "NBO", 115, 0), ("H3", "NBO", "BKK", 560, 100), fares=(88700, 311000)),
+        filler("2027-03-08T22:10", ("S2", "ADD", "DEL", 330, 0), ("S2", "DEL", "BKK", 250, 110), fares=(96400, 339000)),
+        filler("2027-03-08T04:00", ("N7", "ADD", "CAI", 240, 0), ("N7", "CAI", "BKK", 600, 130), fares=(81500, 287000)),
+        filler("2027-03-08T10:15", ("D5", "ADD", "DOH", 230, 0), ("D5", "DOH", "BKK", 370, 240), fares=(93800, 331000)),
+    ],
+    "addis-ababa-budget-review": [
+        filler("2027-03-15T09:40", ("S2", "BKK", "DEL", 250, 0), ("S2", "DEL", "ADD", 330, 100), fares=(86100, 302000)),
+        filler("2027-03-15T02:05", ("H3", "BKK", "NBO", 560, 0), ("H3", "NBO", "ADD", 115, 110), fares=(90900, 318000)),
+        filler("2027-03-15T23:10", ("T6", "BKK", "IST", 560, 0), ("T6", "IST", "ADD", 300, 150), fares=(77800, 274000)),
+        filler("2027-03-15T08:50", ("N7", "BKK", "CAI", 600, 0), ("N7", "CAI", "ADD", 240, 120), fares=(80600, 285000)),
+        filler("2027-03-15T20:30", ("M8", "BKK", "DXB", 360, 0), ("M8", "DXB", "ADD", 219, 200), fares=(94200, 329000)),
+    ],
+    "vienna-ozone-workshop": [
+        filler("2027-04-12T09:15", ("M8", "NBO", "DXB", 300, 0), ("M8", "DXB", "VIE", 360, 100), fares=(95800, 331000)),
+        filler("2027-04-12T10:40", ("D5", "NBO", "DOH", 310, 0), ("D5", "DOH", "VIE", 350, 130), fares=(99100, 342000)),
+        filler("2027-04-12T06:20", ("H3", "NBO", "ADD", 115, 0), ("H3", "ADD", "VIE", 400, 140), fares=(90200, 309000)),
+        filler("2027-04-12T23:50", ("E9", "NBO", "FRA", 530, 0), ("E9", "FRA", "VIE", 80, 90), fares=(104300, 359000)),
+        filler("2027-04-12T08:00", ("B7", "NBO", "LHR", 525, 0), ("B7", "LHR", "VIE", 130, 400), fares=(79800, 272000)),
+    ],
+    "panama-hub-retreat": [
+        filler("2027-04-19T08:40", ("P5", "SCL", "LIM", 210, 0), ("P5", "LIM", "PTY", 230, 220), fares=(64100, 221000)),
+        filler("2027-04-19T04:30", ("V4", "SCL", "BOG", 330, 0), ("V4", "BOG", "PTY", 80, 330), fares=(69700, 241000)),
+        filler("2027-04-19T07:00", ("S2", "SCL", "LIM", 210, 0), ("S2", "LIM", "BOG", 190, 300), ("S2", "BOG", "PTY", 80, 150), fares=(52300, 181000)),
+        filler("2027-04-19T01:20", ("A4", "SCL", "MIA", 510, 0), ("A4", "MIA", "PTY", 165, 420), fares=(58200, 199000)),
+    ],
+    "mogadishu-field-mission": [
+        filler("2027-05-03T11:30", ("T6", "GVA", "IST", 190, 0), ("T6", "IST", "MGQ", 350, 900), fares=(115600, 414000)),
+        filler("2027-05-03T21:40", ("H3", "GVA", "ADD", 400, 0), ("H3", "ADD", "MGQ", 120, 1000), fares=(121400, 437000)),
+        filler("2027-05-03T10:05", ("K2", "GVA", "NBO", 540, 0), ("K2", "NBO", "MGQ", 100, 1100), fares=(104800, 376000)),
+        filler("2027-05-03T12:50", ("N7", "GVA", "CAI", 245, 0), ("N7", "CAI", "MGQ", 320, 1300), fares=(99500, 358000)),
+    ],
+    "kabul-mission-handover": [
+        filler("2027-05-10T04:30", ("T6", "NBO", "IST", 400, 0), ("T6", "IST", "KBL", 300, 900), fares=(97200, 349000)),
+        filler("2027-05-10T15:20", ("S2", "NBO", "DEL", 400, 0), ("S2", "DEL", "KBL", 120, 1000), fares=(113800, 405000)),
+        filler("2027-05-10T22:05", ("M8", "NBO", "DXB", 300, 0), ("M8", "DXB", "KBL", 200, 1120), fares=(92600, 334000)),
+        filler("2027-05-10T18:40", ("D5", "NBO", "DOH", 330, 0), ("D5", "DOH", "KBL", 240, 980), fares=(100900, 362000)),
+    ],
+    "amman-refugee-briefing": [
+        filler("2027-05-24T06:30", ("C3", "GVA", "FCO", 95, 0), ("C3", "FCO", "AMM", 215, 120), fares=(52600, 163000)),
+        filler("2027-05-24T10:15", ("B7", "GVA", "VIE", 95, 0), ("B7", "VIE", "AMM", 220, 150), fares=(56900, 175000)),
+        filler("2027-05-24T12:40", ("N7", "GVA", "CAI", 245, 0), ("N7", "CAI", "AMM", 90, 200), fares=(41300, 131000)),
+        filler("2027-05-24T08:05", ("E9", "GVA", "FRA", 60, 0), ("E9", "FRA", "AMM", 250, 110), fares=(58400, 181000)),
+        filler("2027-05-24T14:30", ("D5", "GVA", "DOH", 360, 0), ("D5", "DOH", "AMM", 180, 180), fares=(38900, 124000)),
+    ],
+    "beirut-donor-roundtable": [
+        filler("2027-06-07T07:45", ("C3", "VIE", "FCO", 100, 0), ("C3", "FCO", "BEY", 200, 110), fares=(61700, 182000)),
+        filler("2027-06-07T09:20", ("L2", "VIE", "AMM", 220, 0), ("L2", "AMM", "BEY", 60, 120), fares=(64900, 191000)),
+        filler("2027-06-07T12:10", ("N7", "VIE", "CAI", 200, 0), ("N7", "CAI", "BEY", 75, 300), fares=(42800, 128000)),
+        filler("2027-06-07T05:50", ("E9", "VIE", "FRA", 80, 0), ("E9", "FRA", "BEY", 240, 140), fares=(47100, 141000)),
+        filler("2027-06-07T14:35", ("D5", "VIE", "DOH", 320, 0), ("D5", "DOH", "BEY", 200, 180), fares=(36200, 109000)),
+    ],
+    "nairobi-interviewer": [
+        filler("2027-06-14T18:30", ("B7", "JFK", "LHR", 420, 0), ("B7", "LHR", "NBO", 520, 120), fares=(151900, 533000)),
+        filler("2027-06-14T17:15", ("E9", "JFK", "CDG", 430, 0), ("E9", "CDG", "NBO", 510, 150), fares=(129800, 456000)),
+        filler("2027-06-14T22:40", ("M8", "JFK", "DXB", 760, 0), ("M8", "DXB", "NBO", 290, 180), fares=(124600, 439000)),
+        filler("2027-06-14T19:05", ("B7", "JFK", "AMS", 430, 0), ("B7", "AMS", "NBO", 505, 95), fares=(145300, 509000)),
+        filler("2027-06-14T21:50", ("D5", "JFK", "DOH", 740, 0), ("D5", "DOH", "NBO", 310, 200), fares=(133700, 471000)),
+    ],
+    "vienna-narcotics-commission": [
+        filler("2027-03-01T18:10", ("E9", "JFK", "FRA", 450, 0), ("E9", "FRA", "VIE", 80, 90), fares=(79100, 293000)),
+        filler("2027-03-01T19:25", ("B7", "JFK", "AMS", 430, 0), ("B7", "AMS", "VIE", 110, 110), fares=(83600, 309000)),
+        filler("2027-03-01T21:00", ("B7", "JFK", "LHR", 420, 0), ("B7", "LHR", "VIE", 130, 150), fares=(86900, 321000)),
+        filler("2027-03-01T15:35", ("E9", "JFK", "CDG", 430, 0), ("E9", "CDG", "VIE", 120, 300), fares=(69800, 258000)),
+        filler("2027-03-01T22:15", ("C3", "JFK", "FCO", 550, 0), ("C3", "FCO", "VIE", 95, 250), fares=(72500, 269000)),
+    ],
+    "geneva-trade-forum": [
+        filler("2027-03-22T18:00", ("E9", "JFK", "FRA", 450, 0), ("E9", "FRA", "GVA", 60, 80), fares=(72100, 268000)),
+        filler("2027-03-22T20:40", ("B7", "JFK", "LHR", 420, 0), ("B7", "LHR", "GVA", 100, 120), fares=(77600, 288000)),
+        filler("2027-03-22T19:15", ("E9", "JFK", "CDG", 430, 0), ("E9", "CDG", "GVA", 70, 100), fares=(80900, 299000)),
+        filler("2027-03-22T16:50", ("B7", "JFK", "AMS", 430, 0), ("B7", "AMS", "GVA", 100, 280), fares=(63400, 236000)),
+        filler("2027-03-22T21:30", ("C3", "JFK", "FCO", 550, 0), ("C3", "FCO", "GVA", 95, 200), fares=(66200, 247000)),
+    ],
+    "bangkok-disaster-drill": [
+        filler("2027-04-05T10:30", ("D5", "VIE", "DOH", 320, 0), ("D5", "DOH", "BKK", 370, 120), fares=(89800, 341000)),
+        filler("2027-04-05T12:15", ("T6", "VIE", "IST", 140, 0), ("T6", "IST", "BKK", 560, 150), fares=(71400, 272000)),
+        filler("2027-04-05T11:05", ("S2", "VIE", "DEL", 440, 0), ("S2", "DEL", "BKK", 250, 130), fares=(83100, 316000)),
+        filler("2027-04-05T07:50", ("E9", "VIE", "FRA", 80, 0), ("E9", "FRA", "BKK", 650, 200), fares=(75600, 288000)),
+        filler("2027-04-05T06:20", ("M8", "VIE", "DXB", 330, 0), ("M8", "DXB", "BKK", 360, 400), fares=(68200, 259000)),
+    ],
+    "new-york-hlpf-panel": [
+        filler("2027-07-12T08:30", ("B7", "NBO", "LHR", 525, 0), ("B7", "LHR", "JFK", 480, 130), fares=(162900, 571000)),
+        filler("2027-07-12T07:45", ("E9", "NBO", "CDG", 520, 0), ("E9", "CDG", "JFK", 500, 200), fares=(139700, 494000)),
+        filler("2027-07-12T04:10", ("M8", "NBO", "DXB", 300, 0), ("M8", "DXB", "JFK", 850, 180), fares=(134200, 476000)),
+        filler("2027-07-12T09:20", ("B7", "NBO", "AMS", 520, 0), ("B7", "AMS", "JFK", 490, 140), fares=(154800, 545000)),
+        filler("2027-07-12T06:00", ("E9", "NBO", "FRA", 530, 0), ("E9", "FRA", "JFK", 510, 300), fares=(144600, 511000)),
+    ],
+    "santiago-logistician": [
+        filler("2027-08-02T17:30", ("V4", "JFK", "LIM", 480, 0), ("V4", "LIM", "SCL", 210, 120), fares=(101600, 373000)),
+        filler("2027-08-02T16:10", ("V4", "JFK", "BOG", 340, 0), ("V4", "BOG", "SCL", 370, 150), fares=(107900, 395000)),
+        filler("2027-08-02T14:45", ("A4", "JFK", "MIA", 190, 0), ("A4", "MIA", "SCL", 510, 240), fares=(89400, 332000)),
+        filler("2027-08-02T12:20", ("A4", "JFK", "PTY", 330, 0), ("A4", "PTY", "SCL", 400, 300), fares=(93800, 349000)),
+    ],
+    "bangkok-water-dialogue": [
+        filler("2027-08-16T10:20", ("M8", "GVA", "DXB", 375, 0), ("M8", "DXB", "BKK", 360, 100), fares=(81500, 309000)),
+        filler("2027-08-16T07:35", ("T6", "GVA", "IST", 190, 0), ("T6", "IST", "BKK", 560, 110), fares=(72600, 277000)),
+        filler("2027-08-16T06:50", ("E9", "GVA", "FRA", 60, 0), ("E9", "FRA", "BKK", 650, 160), fares=(75900, 289000)),
+        filler("2027-08-16T13:05", ("S2", "GVA", "DEL", 450, 0), ("S2", "DEL", "BKK", 250, 130), fares=(87300, 330000)),
+        filler("2027-08-16T15:40", ("D5", "GVA", "DOH", 360, 0), ("D5", "DOH", "BKK", 370, 400), fares=(69100, 263000)),
+    ],
+    "vienna-miles-collector": [
+        filler("2027-09-06T03:30", ("D5", "NBO", "DOH", 310, 0), ("D5", "DOH", "VIE", 350, 130), fares=(96500, 334000)),
+        filler("2027-09-06T06:10", ("H3", "NBO", "ADD", 115, 0), ("H3", "ADD", "VIE", 400, 170), fares=(103400, 362000)),
+        filler("2027-09-06T23:20", ("E9", "NBO", "FRA", 530, 0), ("E9", "FRA", "VIE", 80, 90), fares=(118700, 411000)),
+        filler("2027-09-06T08:45", ("B7", "NBO", "LHR", 525, 0), ("B7", "LHR", "VIE", 130, 420), fares=(74200, 262000)),
+        filler("2027-09-06T07:00", ("S2", "NBO", "JNB", 250, 0), ("S2", "JNB", "VIE", 650, 300), fares=(83600, 290000)),
+    ],
+    "rome-food-security-summit": [
+        filler("2027-10-11T18:50", ("E9", "JFK", "CDG", 430, 0), ("E9", "CDG", "FCO", 125, 100), fares=(85600, 317000)),
+        filler("2027-10-11T19:40", ("B7", "JFK", "LHR", 420, 0), ("B7", "LHR", "FCO", 150, 130), fares=(91800, 333000)),
+        filler("2027-10-11T16:30", ("E9", "JFK", "FRA", 450, 0), ("E9", "FRA", "FCO", 105, 110), fares=(98900, 356000)),
+        filler("2027-10-11T20:15", ("B7", "JFK", "AMS", 430, 0), ("B7", "AMS", "FCO", 130, 350), fares=(76300, 288000)),
+        filler("2027-10-11T21:05", ("A4", "JFK", "VIE", 525, 0), ("A4", "VIE", "FCO", 95, 300), fares=(79400, 299000)),
+    ],
+    "bangkok-results-programme": [
+        filler("2027-09-20T22:30", ("D5", "NBO", "DOH", 310, 0), ("D5", "DOH", "BKK", 370, 150), fares=(77300, 294000)),
+        filler("2027-09-20T04:15", ("T6", "NBO", "IST", 400, 0), ("T6", "IST", "BKK", 560, 120), fares=(72800, 276000)),
+        filler("2027-09-20T07:30", ("H3", "NBO", "ADD", 115, 0), ("H3", "ADD", "BKK", 520, 130), fares=(93100, 351000)),
+        filler("2027-09-20T09:45", ("S2", "NBO", "JNB", 250, 0), ("S2", "JNB", "BKK", 690, 200), fares=(69500, 262000)),
+    ],
+    "nairobi-procurement-clinic": [
+        filler("2027-10-04T07:20", ("E9", "VIE", "FRA", 80, 0), ("E9", "FRA", "NBO", 500, 120), fares=(96800, 331000)),
+        filler("2027-10-04T08:05", ("B7", "VIE", "LHR", 130, 0), ("B7", "LHR", "NBO", 520, 150), fares=(101500, 347000)),
+        filler("2027-10-04T13:40", ("N7", "VIE", "CAI", 230, 0), ("N7", "CAI", "NBO", 300, 400), fares=(79900, 268000)),
+        filler("2027-10-04T21:10", ("S2", "VIE", "ADD", 400, 0), ("S2", "ADD", "NBO", 115, 300), fares=(105200, 362000)),
+    ],
+    "geneva-statistics-briefing": [
+        filler("2027-11-08T00:40", ("H3", "ADD", "FRA", 440, 0), ("H3", "FRA", "GVA", 60, 140), fares=(80400, 294000)),
+        filler("2027-11-08T03:50", ("M8", "ADD", "DXB", 220, 0), ("M8", "DXB", "GVA", 410, 130), fares=(84900, 309000)),
+        filler("2027-11-08T06:15", ("D5", "ADD", "DOH", 230, 0), ("D5", "DOH", "GVA", 390, 400), fares=(64200, 236000)),
+        filler("2027-11-08T08:30", ("K2", "ADD", "NBO", 115, 0), ("K2", "NBO", "GVA", 540, 300), fares=(67900, 249000)),
+        filler("2027-11-08T23:55", ("B7", "ADD", "LHR", 470, 0), ("B7", "LHR", "GVA", 100, 110), fares=(89300, 326000)),
+    ],
+    "mogadishu-logistics-survey": [
+        filler("2028-03-10T11:30", ("T6", "VIE", "IST", 140, 0), ("T6", "IST", "ADD", 300, 150), ("T6", "ADD", "MGQ", 120, 920), fares=(136200, 477000)),
+        filler("2028-03-10T06:40", ("M8", "VIE", "DXB", 330, 0), ("M8", "DXB", "MGQ", 290, 1300), fares=(109600, 384000)),
+        filler("2028-03-10T08:15", ("H3", "VIE", "ADD", 400, 0), ("H3", "ADD", "MGQ", 120, 1420), fares=(115300, 404000)),
+    ],
+}
 
 
 def chain(airports, spec):
@@ -522,12 +829,25 @@ def build():
         {"traveler_id": traveler_id, "name": name, "department": department, "base_point": base}
         for traveler_id, name, department, base in TRAVELERS
     ]
-    count = sum(len(scenario["routes"]) for scenario in SCENARIOS)
-    numbers = random.Random(SEED).sample(range(100, 1000), count)
-    segments, itineraries, files = {}, [], {}
+    if sorted(FILLERS) != sorted(scenario["facts"]["scenario"] for scenario in SCENARIOS):
+        raise ValueError("FILLERS must name every scenario once")
+    pools = []
     for scenario in SCENARIOS:
+        fillers = FILLERS[scenario["facts"]["scenario"]]
+        check_fillers(scenario["facts"]["scenario"], scenario["routes"], fillers)
+        pools.append([*scenario["routes"], *fillers])
+    count = sum(len(pool) for pool in pools)
+    numbers = random.Random(SEED).sample(range(100, 1000), count)
+    segments, itineraries, files, numbered = {}, [], {}, 0
+    for scenario, pool in zip(SCENARIOS, pools, strict=True):
         facts = dict(scenario["facts"])
-        for index, spec in enumerate(scenario["routes"]):
+        for index, spec in enumerate(pool):
+            if spec.get("filler"):
+                legs = []
+                for leg in spec["legs"]:
+                    numbered += 1
+                    legs.append((f"{leg[1]} {3000 + numbered}", *leg[1:]))  # fillers fly numbers 3001 and up
+                spec = {**spec, "legs": tuple(legs)}
             records = []
             for flight in chain(airports, spec):
                 if flight not in segments:

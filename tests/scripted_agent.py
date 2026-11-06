@@ -27,7 +27,9 @@ def audit(case):
     """The audit the handbook gives for one get_audit_case output."""
     pool = {item["itinerary_id"]: item for item in case["itineraries"]}
     proposal = pool[case["proposed_itinerary_id"]]
-    economy_only = case["traveler_category"] in ("consultant", "training_participant")
+    economy_only = case["traveler_category"] in ("consultant", "training_participant") or (
+        case["trip_purpose"] == "learning_and_development" and case["traveler_category"] != "instructor"
+    )
     entitled = "business" if not economy_only and business_by_duration(proposal) else "economy"
     direct = min(item["total_elapsed_minutes"] for item in pool.values())
     allowed = [item for item in pool.values() if item["total_elapsed_minutes"] - direct < 240]

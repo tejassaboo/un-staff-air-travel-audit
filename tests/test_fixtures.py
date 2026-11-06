@@ -132,10 +132,20 @@ def test_scenario_files_hold_facts_only(scenario: str) -> None:
     assert facts["traveler_id"] in world()["travelers"]
     request, booking, departure = (date.fromisoformat(facts[key]) for key in ("request_date", "booking_date", "departure_date"))
     assert request <= booking < departure
-    training = facts["trip_purpose"] == "learning_and_development"
-    assert training == (facts["traveler_category"] in ("training_participant", "instructor"))
+    if facts["traveler_category"] in ("training_participant", "instructor"):
+        assert facts["trip_purpose"] == "learning_and_development"  # a staff member may attend training too (C1)
     pool = candidates(world(), facts)
-    assert len(pool) >= 2 and facts["proposed_itinerary_id"] in [item["itinerary_id"] for item in pool]
+    assert 6 <= len(pool) <= 8 and facts["proposed_itinerary_id"] in [item["itinerary_id"] for item in pool]
+
+
+@pytest.mark.parametrize("scenario", SCENARIOS)
+def test_the_route_rule_is_a_real_search(scenario: str) -> None:
+    # Several candidates pass the time rule, so the least costly one must be found among them, and at least one
+    # fails it, so a cheaper route that never counts is on offer (C6).
+    pool = candidates(world(), load_scenario(scenario))
+    direct = min(item["total_elapsed_minutes"] for item in pool)
+    allowed = [item for item in pool if item["total_elapsed_minutes"] - direct < 240]
+    assert len(allowed) >= 3 and len(allowed) < len(pool)
 
 
 @pytest.mark.parametrize("scenario", SCENARIOS)

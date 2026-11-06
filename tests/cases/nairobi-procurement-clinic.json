@@ -1,0 +1,42 @@
+{
+ "scenario": "nairobi-procurement-clinic",
+ "note": "Instructor on training travel follows the staff rule: 330 + min(130, 120) + 300 = 750 >= 660 gives business. The most direct route is the Istanbul connection (625 min); the proposal is +135, allowed, but costs 312000 cents in business against 289000 on the Doha route (+115, allowed): ROUTE_NOT_LEAST_COSTLY alone.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [
+   "ROUTE_NOT_LEAST_COSTLY"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "treats the instructor as a training participant",
+   "change": {
+    "entitled_cabin": "economy",
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT",
+     "ROUTE_NOT_LEAST_COSTLY"
+    ]
+   },
+   "reason": "entitled-cabin-correct"
+  },
+  {
+   "why": "misses the cheaper allowed route",
+   "change": {
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "route-not-least-costly-correct"
+  },
+  {
+   "why": "also flags the time rule, though +135 < 240",
+   "change": {
+    "violations": [
+     "ROUTE_EXCEEDS_TIME_LIMIT",
+     "ROUTE_NOT_LEAST_COSTLY"
+    ]
+   },
+   "reason": "route-exceeds-time-limit-correct"
+  }
+ ]
+}

@@ -11,8 +11,17 @@ submitted one against it in stages, each a list of constraints with stable ids (
 
 A stage is checked only when every earlier stage holds. The message names the first failing constraint,
 with the rule and the numbers behind it, and how many more fail. Shape problems (types, Enum values,
-missing or extra fields) never get here: NanoAgent's build_output refuses them first. The score is 1.0
-when every constraint holds, else 0.0.
+missing or extra fields) never get here: NanoAgent's build_output refuses them first.
+
+valid is strict: true only when every constraint holds. The score is partial credit in [0, 1] for how much
+of the slip is right (``partial_score``): it counts the slip's decisions, which are the entitled cabin, the
+compliant stamp, and every violation code that is either wanted or listed, and divides the right ones by
+all of them. A missing flag and a flag listed in error each cost one decision (the compliant stamp flips
+with the list's emptiness in either direction), so being wrong in either direction costs the same. Two
+caps, both documented in the README: a wrong entitled cabin, the audit's primary ruling, caps the score at
+0.5, and so does an inconsistent slip (a repeated code, a wrong order, or a compliant stamp that disagrees
+with the list; the codes are then graded as a set). A broken answer key scores 0. An empty slip on a trip
+with violations earns credit only for whatever it got right by default, so lazy answers stay low.
 """
 
 from .checks import UNEXPECTED, fixtures, plain, result
@@ -25,6 +34,7 @@ from .rules import (
     ROUTE_EXTRA_LIMIT,
     SINGLE_LEG_MIN,
     STOPOVER_OVER,
+    TRAINING,
     VIOLATIONS,
     facts,
     oracle,
@@ -103,11 +113,45 @@ def judge(key, numbers, pinned, given):
         if failed and blocked is None:
             blocked = failed[0]["id"]
     failed = [item for item in constraints if item["ok"] is False]
-    details = {"constraints": constraints, "expected": key, "facts": numbers}
+    score, breakdown = partial_score(key, given, {item["id"] for item in failed})
+    details = {"constraints": constraints, "expected": key, "facts": numbers, "score_breakdown": breakdown}
     if not failed:
-        return result(True, f"the audit is right: {summary(given)}", **details)
+        return result(True, f"the audit is right: {summary(given)}", score=1.0, **details)
     more = f" (+{len(failed) - 1} more)" if len(failed) > 1 else ""
-    return result(False, f"{failed[0]['id']}: {failed[0]['message']}{more}", **details)
+    return result(False, f"{failed[0]['id']}: {failed[0]['message']}{more}", score=score, **details)
+
+
+CONSISTENCY = ("violations-unique", "violations-in-order", "compliant-matches-violations")
+CAP = 0.5  # the most a slip with the wrong cabin, or an inconsistent one, can score
+
+
+def partial_score(key, given, failed):
+    """(the score in [0, 1], its breakdown): the share of the slip's decisions that are right, capped."""
+    wanted, listed = set(key["violations"]), set(given["violations"])
+    decisions = [
+        ("entitled_cabin", given["entitled_cabin"] == key["entitled_cabin"]),
+        ("compliant", given["compliant"] == key["compliant"]),
+        *((code, code in wanted and code in listed) for code in VIOLATIONS if code in wanted | listed),
+    ]
+    right = sum(1 for _, ok in decisions if ok)
+    score = right / len(decisions)
+    capped_by = []
+    if "reference-matches-oracle" in failed:
+        score, capped_by = 0.0, ["reference-matches-oracle"]
+    else:
+        if given["entitled_cabin"] != key["entitled_cabin"]:
+            capped_by.append("entitled-cabin-correct")
+        capped_by.extend(identifier for identifier in CONSISTENCY if identifier in failed)
+        if capped_by:
+            score = min(score, CAP)
+    if not failed:
+        score = 1.0
+    return round(score, 4), {
+        "decisions": [{"decision": name, "right": ok} for name, ok in decisions],
+        "right": right,
+        "total": len(decisions),
+        "capped_by": capped_by,
+    }
 
 
 def entry(identifier, ok, expected, actual, message):
@@ -151,6 +195,11 @@ def compliant_problem(given):
 def entitlement_reason(numbers):
     if numbers["traveler_category"] in ECONOMY_ONLY:
         return f"a {numbers['traveler_category']} travels economy whatever the duration (C1)"
+    if numbers["trip_purpose"] == TRAINING and numbers["economy_only"]:
+        return (
+            f"a {numbers['traveler_category']} on {TRAINING} travel attends the training, not teaches it, so travels "
+            f"economy whatever the duration (C1, section 4.3 (d))"
+        )
     leg, parts = numbers["longest_leg_minutes"], numbers["part_minutes"]
     leg_text = f"longest single flight {leg} min is {'' if leg >= SINGLE_LEG_MIN else 'not '}>= {SINGLE_LEG_MIN}"
     best = max(parts)

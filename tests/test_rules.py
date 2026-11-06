@@ -113,6 +113,29 @@ def test_categories_on_a_14_hour_flight(category: str, cabin: str) -> None:
     assert entitled([840], category=category) == cabin
 
 
+@pytest.mark.parametrize(
+    ("category", "purpose", "cabin"),
+    [
+        ("staff_below_asg", "learning_and_development", "economy"),  # attends the training (section 4.3 (d))
+        ("staff_below_asg", "official_business", "business"),
+        ("instructor", "learning_and_development", "business"),  # teaches it: the staff rule applies
+        ("consultant", "learning_and_development", "economy"),
+        ("consultant", "official_business", "economy"),
+        ("training_participant", "learning_and_development", "economy"),
+    ],
+)
+def test_trip_purpose_on_a_14_hour_flight(category: str, purpose: str, cabin: str) -> None:
+    world = world_of(("X1", [840], [], 50000, 200000))
+    assert entitled_cabin(world, scenario(traveler_category=category, trip_purpose=purpose)) == cabin
+
+
+def test_a_staff_member_on_training_travel_proposing_business_is_above_entitlement() -> None:
+    world = world_of(("X1", [840], [], 50000, 200000))
+    facts = scenario(trip_purpose="learning_and_development")
+    assert oracle(world, facts) == {"entitled_cabin": "economy", "violations": ["CABIN_ABOVE_ENTITLEMENT"], "compliant": False}
+    assert oracle(world, {**facts, "proposed_cabin": "economy"}) == {"entitled_cabin": "economy", "violations": [], "compliant": True}
+
+
 @pytest.mark.parametrize(("extra", "flagged"), [(239, False), (240, True)])
 def test_route_239_vs_240(extra: int, flagged: bool) -> None:
     # X2 is the direct nonstop (300 min); X1 connects with 100 + layover + 100 = 300 + extra.

@@ -1,0 +1,30 @@
+{
+ "scenario": "bangkok-results-programme",
+ "note": "Staff member attending a training programme (learning_and_development): economy whatever the duration, so the 560-min nonstop does not help; business proposed is above entitlement. The nonstop is the most direct and the cheapest allowed in economy; the 22-day ticket and 30-day request are on time.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "CABIN_ABOVE_ENTITLEMENT"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "reads the category but not the trip purpose: 560 >= 540 gives business",
+   "change": {
+    "entitled_cabin": "business",
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "entitled-cabin-correct"
+  },
+  {
+   "why": "right cabin but forgets to flag the business proposal",
+   "change": {
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "cabin-above-entitlement-correct"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "scenario": "mogadishu-logistics-survey",
+ "request_text": "I'm surveying warehouse capacity for the support office in Mogadishu. Vienna to Dubai, on to Nairobi, an overnight there and the morning hop to Mogadishu. I filed the request on 18 February and the ticket was issued on the 23rd, so with the leap day I make that three weeks and sixteen days exactly. Business, please.",
+ "request_date": "2028-02-18",
+ "booking_date": "2028-02-23",
+ "traveler_id": "T323",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "VIE",
+ "destination": "MGQ",
+ "departure_date": "2028-03-10",
+ "proposed_itinerary_id": "I531",
+ "proposed_cabin": "business"
+}

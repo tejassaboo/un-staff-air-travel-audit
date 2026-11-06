@@ -7,11 +7,11 @@ from helpers import ROOT, SCENARIOS, case, verdict
 from scripted_agent import run
 from slimconfig import build_output, plain_output
 
-from contract import TOOLS, Tool, UnAuditOutput
+from contract import TOOLS, Tool, UnAuditOutput, UnViolation
 from plugin import get_audit_case
 from plugin.fixtures import scenario as load_scenario
 from plugin.fixtures import world
-from plugin.rules import candidates, oracle
+from plugin.rules import candidates, facts, oracle
 
 MAX_TOOL_CALLS = 4  # plus submit, within the hosted 6 steps whose last may not call tools
 
@@ -49,6 +49,35 @@ def test_the_answer_is_unique(scenario: str) -> None:
     assert by_economy == by_business
     assert len({item["fares_cents"]["economy"] for item in pool}) == len(pool)  # no fare ties
     assert len({item["total_elapsed_minutes"] for item in pool}) == len(pool)  # one most direct route
+
+
+def test_every_violation_code_and_rule_branch_occurs_in_a_bundled_scenario() -> None:
+    # Coverage of the handbook: each violation code, each C1 traveller branch, and each C3/C4 duration branch
+    # decides at least one bundled scenario. (C6's "fares compared in the entitled cabin on a voluntary downgrade"
+    # can change no bundled answer by design: every pool ranks the same in both cabins, see test_the_answer_is_unique.)
+    expected = {scenario: case(scenario)["expected"] for scenario in SCENARIOS}
+    codes = {code for answer in expected.values() for code in answer["violations"]}
+    assert codes == {member.value for member in UnViolation}
+    numbers = {scenario: facts(world(), load_scenario(scenario)) for scenario in SCENARIOS}
+    seen = {(load_scenario(s)["traveler_category"], load_scenario(s)["trip_purpose"]) for s in SCENARIOS}
+    assert seen >= {
+        ("staff_below_asg", "official_business"),
+        ("staff_below_asg", "learning_and_development"),
+        ("instructor", "learning_and_development"),
+        ("training_participant", "learning_and_development"),
+        ("consultant", "official_business"),
+    }
+    assert any(len(n["part_minutes"]) > 1 for n in numbers.values())  # a stopover over 720 splits the journey
+    assert any(720 in n["layover_minutes"] for n in numbers.values())  # exactly 720 does not
+    assert any(any(layover > 120 for layover in n["layover_minutes"]) and len(n["part_minutes"]) == 1 for n in numbers.values())
+    assert any(len(n["layover_minutes"]) >= 2 for n in numbers.values())  # two connections, capped separately
+    assert any(n["longest_leg_minutes"] >= 540 for n in numbers.values())  # C2
+    assert any(n["longest_leg_minutes"] < 540 and max(n["part_minutes"]) >= 660 for n in numbers.values())  # C3 alone
+    assert any(n["extra_minutes"] >= 240 for n in numbers.values())  # the proposal itself fails the time rule
+    assert any(n["booking_days_ahead"] == 16 for n in numbers.values()) and any(n["booking_days_ahead"] == 15 for n in numbers.values())
+    assert any(n["request_days_ahead"] == 21 for n in numbers.values()) and any(n["request_days_ahead"] == 20 for n in numbers.values())
+    downgrades = [s for s in SCENARIOS if load_scenario(s)["proposed_cabin"] == "economy" and expected[s]["entitled_cabin"] == "business"]
+    assert downgrades  # a voluntary downgrade is never a violation (C7)
 
 
 @pytest.mark.parametrize("scenario", SCENARIOS)

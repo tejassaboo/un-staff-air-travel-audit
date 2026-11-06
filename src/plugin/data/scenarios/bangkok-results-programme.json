@@ -1,0 +1,14 @@
+{
+ "scenario": "bangkok-results-programme",
+ "request_text": "I've been nominated for the two-week results-based management programme at the ESCAP campus in Bangkok. The Lotus Sky nonstop is nine hours twenty, comfortably over the nine-hour line, and I'm a regular staff member, not a consultant, so business should be automatic. Please confirm.",
+ "request_date": "2027-08-21",
+ "booking_date": "2027-08-29",
+ "traveler_id": "T320",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "learning_and_development",
+ "origin": "NBO",
+ "destination": "BKK",
+ "departure_date": "2027-09-20",
+ "proposed_itinerary_id": "I842",
+ "proposed_cabin": "business"
+}

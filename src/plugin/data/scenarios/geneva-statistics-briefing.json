@@ -1,0 +1,14 @@
+{
+ "scenario": "geneva-statistics-briefing",
+ "request_text": "I'm briefing the Statistical Commission's bureau in Geneva on the African census round. Addis to Istanbul is just under five hours, the connection is two hours and a minute, then four hours to Geneva: that adds up to eleven hours of travel, so I've proposed business on Taurus Anatolia.",
+ "request_date": "2027-10-11",
+ "booking_date": "2027-10-19",
+ "traveler_id": "T322",
+ "traveler_category": "staff_below_asg",
+ "trip_purpose": "official_business",
+ "origin": "ADD",
+ "destination": "GVA",
+ "departure_date": "2027-11-08",
+ "proposed_itinerary_id": "I277",
+ "proposed_cabin": "business"
+}

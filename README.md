@@ -10,7 +10,7 @@ oracle that it computes itself.
 
 ## Task
 
-- **Input:** `ScenarioInput` with a single field, `scenario`, which names one of nineteen bundled
+- **Input:** `ScenarioInput` with a single field, `scenario`, which names one of twenty-three bundled
   proposed trips, for example `{"scenario": "kabul-mission-handover"}`.
 - **Runner:** `agent`. The agent calls `get_audit_case`, then `submit`: two of the hosted six steps.
   The output is entirely Enum/bool, so a `decide` runner was the first design; it passes `inspect` and a
@@ -22,17 +22,20 @@ oracle that it computes itself.
     `CABIN_ABOVE_ENTITLEMENT`, `ROUTE_EXCEEDS_TIME_LIMIT`, `ROUTE_NOT_LEAST_COSTLY`, `LATE_ARRANGEMENT`,
     `LATE_REQUEST_ABOVE_ECONOMY`;
   - `compliant`: true exactly when `violations` is empty.
-- **Success:** the audit equals the one audit the handbook's rules give.
+- **Success:** `valid` when the audit equals the one audit the handbook's rules give; the `score` is partial
+  credit for how many of the slip's decisions are right (see Verifier).
 
 The handbook is `src/plugin/data/handbook.md`. It is also the task's `instructions` in `nanoagent.yaml`, and a test keeps the two identical. It has the paraphrased in-scope rules, the "Clarifications (toy rules)" C1–C11, the rules not in scope, and the step plan.
 
 Every fact the audit depends on is a typed field of `get_audit_case`'s output: the traveller category
 and trip purpose (Enums), the request, booking and departure dates, the proposed itinerary and cabin, and
-every candidate itinerary with its in-air, layover and elapsed minutes and its fares in integer cents.
-`request_text` is the traveller's own voice, with distractors such as "my colleague always flies business
+every candidate itinerary (six to eight per trip) with its in-air, layover and elapsed minutes and its fares
+in integer cents. `request_text` is the traveller's own voice, with distractors such as "my colleague always flies business
 on this route". The answer never depends on it.
 
-Each scenario sets at least one trap. Expected answers are hand-written in `tests/cases/`:
+Each scenario sets at least one trap, and each pool of candidates holds several routes that pass the time
+rule and at least one cheaper route that fails it, so the least costly allowed route has to be found.
+Expected answers are hand-written in `tests/cases/`:
 
 | Scenario | Trap | Entitled | Violations |
 |---|---|---|---|
@@ -55,6 +58,16 @@ Each scenario sets at least one trap. Expected answers are hand-written in `test
 | `bangkok-water-dialogue` | Late request, but economy proposed (voluntary downgrade) | business | none |
 | `vienna-miles-collector` | Training participant, business via a pricier route, late on both dates | economy | `CABIN_ABOVE_ENTITLEMENT`, `ROUTE_NOT_LEAST_COSTLY`, `LATE_ARRANGEMENT`, `LATE_REQUEST_ABOVE_ECONOMY` |
 | `rome-food-security-summit` | Loyalty routing via Istanbul, +315 min and pricier | business | `ROUTE_EXCEEDS_TIME_LIMIT`, `ROUTE_NOT_LEAST_COSTLY` |
+| `bangkok-results-programme` | Staff member attending training on a 560-min nonstop: `trip_purpose` decides, not the duration | economy | `CABIN_ABOVE_ENTITLEMENT` |
+| `nairobi-procurement-clinic` | Instructor entitled to business (330 + 120 + 300 = 750) picks a route 23000 cents pricier in business than an allowed one | business | `ROUTE_NOT_LEAST_COSTLY` |
+| `geneva-statistics-briefing` | A 121-min connection counts as 120: 299 + 120 + 240 = 659, where the raw sum is 660 | economy | `CABIN_ABOVE_ENTITLEMENT` |
+| `mogadishu-logistics-survey` | Two connections, the second a 780-min stopover: the first part counts 730; request exactly 21 and ticket exactly 16 days ahead across 29 February 2028 | business | none |
+
+Every violation code, every C1 traveller branch (staff on official business, staff attending training,
+instructor, training participant, consultant) and every C2 to C4 duration branch decides at least one bundled
+scenario (`tests/test_cases.py` checks this). One C6 detail cannot: fares are compared in the entitled cabin
+even on a voluntary downgrade, but every pool ranks the same in economy and in business by design (so the
+cabin an agent compares in can never change a bundled answer), and that branch is unit-tested only.
 
 ## Tools
 
@@ -73,7 +86,8 @@ Each scenario sets at least one trap. Expected answers are hand-written in `test
 
 - Offline and self-contained. It uses `hosts: []`, an empty `.env`, and `write: []`, and has no clock. Every date is a scenario field.
 - Fixtures are in `src/plugin/data/`: `airports.json`, `carriers.json` (fictional airlines), `segments.json` (local times, UTC times and `in_air_minutes` precomputed), `itineraries.json` (layover and elapsed minutes precomputed), `travelers.json`, and `scenarios/<id>.json`, which holds facts only and never an answer.
-- Fixtures come from the seeded generator `src/plugin/tools_dev/generate.py`, which builds on `tools_dev/worldgen.py`. A test checks that the generator still reproduces the committed files byte for byte. The seed only scatters the itinerary ids.
+- Fixtures come from the seeded generator `src/plugin/tools_dev/generate.py`, which builds on `tools_dev/worldgen.py`. A test checks that the generator still reproduces the committed files byte for byte. The seed only scatters the itinerary ids. Each scenario's trap routes are written by hand; its filler routes are too, and the generator's `check_fillers` proves by arithmetic that no filler can change a hand-computed answer (every filler is slower than the most direct hand route, and a filler that passes the time rule is pricier in both cabins than the cheapest hand route that passes it).
+- Each `get_audit_case` output is 3.6 to 5.0 thousand characters (about 0.9 to 1.3 thousand tokens).
 - The shared core `src/plugin/world.py` (fixture schema and loader, date arithmetic, the search) is vendored byte-identical into `verifier/world.py`. The oracle `rules.py` is likewise byte-identical in `src/plugin/` and `verifier/`.
 - Python 3.12 or later, with dependencies pinned by `uv.lock`.
 
@@ -89,7 +103,21 @@ Each scenario sets at least one trap. Expected answers are hand-written in `test
 How it scores:
 
 - `violations` must follow the canonical order (the declaration order of `UnViolation`). Handbook C10, the field's description and the Enum all state it, so there is exactly one correct list; a wrong order fails `violations-in-order` and names the expected order.
-- The score is 1.0 when the audit is right and 0.0 otherwise. `details` holds every constraint with expected and actual values, the expected audit, and the facts behind it, as plain JSON.
+- `valid` is strict: true only when every check passes, and then the score is 1.0.
+- The `score` is partial credit in [0, 1]. It counts the slip's decisions: the entitled cabin, the compliant
+  stamp, and every violation code that is either wanted or listed; the score is the right decisions divided by
+  all of them (`details.score_breakdown` lists them). A missing flag and a flag listed in error each cost one
+  decision, and the stamp flips with the list's emptiness in either direction, so the two directions cost the
+  same: one of four flags missing scores 0.8333, the only flag missing or a flag added to a compliant trip 0.3333.
+- Two caps. A wrong entitled cabin, the audit's primary ruling, caps the score at 0.5, however many flags are
+  right. An inconsistent slip (a repeated code, a wrong order, or a stamp that disagrees with the list) is
+  graded as a set and capped at 0.5 too. A pinned answer key that differs from the oracle scores 0.
+- Known edges, by construction: an empty `economy` slip scores 0.5 on a compliant business trip (the stamp is
+  right by default, the cabin cap holds the rest), and an everything-flagged slip scores 0.8571 on the one
+  trip that breaks four of the five rules. Over the scenarios where they are not the gold answer, the empty
+  and everything-flagged slips average 0.16 to 0.34, and another scenario's answer averages 0.23.
+- `details` holds every constraint with expected and actual values, the expected audit, the facts behind it
+  and the score breakdown, as plain JSON.
 - Shape errors never reach the verifier, because NanoAgent's `build_output` refuses them first: a wrong type, an unknown Enum value, a missing or extra field, `null` for a required field.
 - The verifier is pure stdlib and never raises, not even on an unknown task or tool id. An unexpected value becomes a `verifier-error` verdict.
 - Tool outputs are also checked against the fixtures (`verify_output`).
@@ -99,7 +127,9 @@ How it scores:
 `tests/` covers the brief's test matrix:
 
 - correct, incorrect, missing and malformed outputs, with malformed cases as `build_output` rejections;
-- boundaries at 539/540 and 659/660 minutes, a 150-min layover, 720/721-min stopovers, +239/+240 min, 15/16 and 20/21 days, each on the oracle's own functions and as a scenario;
+- boundaries at 539/540 and 659/660 minutes, a 150-min and a 121-min layover, 720/721-min stopovers, +239/+240 min, 15/16 and 20/21 days (also across a leap day), each on the oracle's own functions and as a scenario;
+- partial scores: exact values for one missing or one spurious flag, the wrong-cabin and inconsistency caps, both directions costing one decision, lazy and other-scenario answers staying low, and `valid` only at 1.0;
+- every violation code and rule branch occurs in a bundled scenario, and every pool is a real search (several allowed routes, a cheaper disallowed one);
 - consistency (`compliant` against `violations`, repeats, order) and uniqueness;
 - oracle == the hand-written `tests/cases/<scenario>.json` for every scenario;
 - the `rules.py` and `world.py` identity checks, handbook == `instructions`, generator reproducibility, fixture integrity (UTC times recomputed with `zoneinfo`);

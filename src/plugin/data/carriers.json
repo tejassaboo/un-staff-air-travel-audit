@@ -6,6 +6,12 @@
   "codeshare_partners": []
  },
  {
+  "code": "B7",
+  "name": "Boreal Wings",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
   "code": "C3",
   "name": "Cedar Crescent",
   "us_flag_carrier": false,
@@ -14,6 +20,12 @@
  {
   "code": "D5",
   "name": "Dune Pearl Airways",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "E9",
+  "name": "Elbe Express",
   "us_flag_carrier": false,
   "codeshare_partners": []
  },
@@ -56,6 +68,12 @@
  {
   "code": "P5",
   "name": "Pacific Condor",
+  "us_flag_carrier": false,
+  "codeshare_partners": []
+ },
+ {
+  "code": "S2",
+  "name": "Savanna Air",
   "us_flag_carrier": false,
   "codeshare_partners": []
  },

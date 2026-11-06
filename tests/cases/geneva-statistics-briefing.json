@@ -1,0 +1,30 @@
+{
+ "scenario": "geneva-statistics-briefing",
+ "note": "A 121-min connection counts as 120: 299 + 120 + 240 = 659 < 660, so economy (the raw sum 299 + 121 + 240 = 660 would give business). Business proposed is above entitlement. The Cairo route is the most direct (635); the proposal is +25 and the cheapest allowed in economy; 20-day ticket and 28-day request on time.",
+ "expected": {
+  "entitled_cabin": "economy",
+  "violations": [
+   "CABIN_ABOVE_ENTITLEMENT"
+  ],
+  "compliant": false
+ },
+ "broken": [
+  {
+   "why": "counts the full 121-min connection: 660 gives business",
+   "change": {
+    "entitled_cabin": "business",
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "entitled-cabin-correct"
+  },
+  {
+   "why": "right cabin, but calls the proposal compliant",
+   "change": {
+    "violations": [],
+    "compliant": true
+   },
+   "reason": "cabin-above-entitlement-correct"
+  }
+ ]
+}

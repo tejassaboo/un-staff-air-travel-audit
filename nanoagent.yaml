@@ -1,7 +1,7 @@
 _ > nanoagent.plugin.v0001.ManifestConfig:
 id: un-staff-air-travel-audit
 name: UN Staff Air Travel Audit
-version: 0.1.0
+version: 0.2.0
 status: ready
 spec: nanoagent.plugin/v0001
 
@@ -50,7 +50,7 @@ tasks > dict[contract.Task, nanoagent.plugin.v0001.TaskConfig]:
 
       These settle every point where the real text is vague. The checker enforces exactly these, using the structured fields of get_audit_case. The request_text is the traveller's own voice: it may argue, exaggerate or ask for extras, and it never changes a fact.
 
-      - **C1 Who gets which rule.** traveler_category is one of staff_below_asg, consultant, training_participant and instructor. A consultant or a training_participant is entitled to economy, always. A staff_below_asg or an instructor is entitled to business when C2 or C3 holds for the proposed itinerary, and to economy otherwise. Assistant Secretaries-General and above are out of scope.
+      - **C1 Who gets which rule.** traveler_category is one of staff_below_asg, consultant, training_participant and instructor, and trip_purpose is official_business or learning_and_development. A consultant or a training_participant is entitled to economy, always. A staff_below_asg whose trip_purpose is learning_and_development attends the training and is entitled to economy, always, whatever the journey's duration (section 4.3 (d)). An instructor, and a staff_below_asg on official_business, is entitled to business when C2 or C3 holds for the proposed itinerary, and to economy otherwise. Assistant Secretaries-General and above are out of scope.
       - **C2 Single leg.** One flight with in_air_minutes ≥ 540 gives business. 539 does not.
       - **C3 Combined time.** A journey part's combined time is the sum of its flights' in_air_minutes plus, for each connection inside the part, min(layover, 120). A part counting ≥ 660 gives business. 659 does not. The 2-hour cap applies to each connection separately. Section 4.3 (c) itself does not say so; the toy rule borrows, by analogy, the rest-period computation of section 5.5, which counts "a maximum of two hours ... for each necessary waiting period between connecting flights". (Another reading caps all connections together at 2 hours. This task does not use it.) Waiting before the first flight or after the last is never counted.
       - **C4 Stopovers.** A layover over 720 minutes is a stopover that breaks the journey into separate parts, which are never added together. A layover of exactly 720 minutes still "resumes within 12 hours", so it stays one part and counts as 120. When any part qualifies under C2 or C3, the entitlement is business.

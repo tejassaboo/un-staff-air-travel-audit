@@ -1,0 +1,43 @@
+{
+ "scenario": "mogadishu-logistics-survey",
+ "note": "Two connections, the second a 780-min stopover: parts of 330 + 100 + 300 = 730 and 100; the first qualifies, so business. The proposal is the most direct (1610) and the cheapest allowed in business. Departure 2028-03-10: the request of 2028-02-18 is exactly 21 days ahead and the ticket of 2028-02-23 exactly 16, both across 29 February 2028 (a leap day). Compliant.",
+ "expected": {
+  "entitled_cabin": "business",
+  "violations": [],
+  "compliant": true
+ },
+ "broken": [
+  {
+   "why": "lets the overnight stop reset the whole journey",
+   "change": {
+    "entitled_cabin": "economy",
+    "violations": [
+     "CABIN_ABOVE_ENTITLEMENT"
+    ],
+    "compliant": false
+   },
+   "reason": "entitled-cabin-correct"
+  },
+  {
+   "why": "counts 20 and 15 days by forgetting the leap day",
+   "change": {
+    "violations": [
+     "LATE_ARRANGEMENT",
+     "LATE_REQUEST_ABOVE_ECONOMY"
+    ],
+    "compliant": false
+   },
+   "reason": "late-arrangement-correct"
+  },
+  {
+   "why": "forgets the leap day for the request only",
+   "change": {
+    "violations": [
+     "LATE_REQUEST_ABOVE_ECONOMY"
+    ],
+    "compliant": false
+   },
+   "reason": "late-request-above-economy-correct"
+  }
+ ]
+}

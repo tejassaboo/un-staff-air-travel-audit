@@ -15,6 +15,7 @@ ROUTE_EXTRA_LIMIT = 240  # C6: a route is allowed while it takes fewer extra min
 ARRANGEMENT_DAYS = 16  # C8: arrangements finalized at least this many days before departure
 REQUEST_DAYS = 21  # C9: above-economy travel needs the request at least this many days before
 ECONOMY_ONLY = ("consultant", "training_participant")  # C1: economy whatever the duration
+TRAINING = "learning_and_development"  # C1: a staff member attending training travels economy (section 4.3 (d))
 # The canonical order of a violations list (C10), the order of contract.UnViolation.
 VIOLATIONS = (
     "CABIN_ABOVE_ENTITLEMENT",
@@ -65,9 +66,17 @@ def duration_entitles_business(world, itinerary):
     return longest >= SINGLE_LEG_MIN or max(counted_minutes(part) for part in parts) >= COMBINED_MIN
 
 
+def economy_only(scenario):
+    """C1: the traveller is entitled to economy whatever the journey's duration: a consultant or a training
+    participant always, and anyone but an instructor whose trip is learning and development travel."""
+    return scenario["traveler_category"] in ECONOMY_ONLY or (
+        scenario["trip_purpose"] == TRAINING and scenario["traveler_category"] != "instructor"
+    )
+
+
 def entitled_cabin(world, scenario):
     """The cabin the traveller is entitled to on the proposed itinerary."""
-    if scenario["traveler_category"] in ECONOMY_ONLY:
+    if economy_only(scenario):
         return "economy"
     return "business" if duration_entitles_business(world, proposed(world, scenario)) else "economy"
 
@@ -124,6 +133,8 @@ def facts(world, scenario):
         "proposed_itinerary_id": itinerary["itinerary_id"],
         "proposed_cabin": scenario["proposed_cabin"],
         "traveler_category": scenario["traveler_category"],
+        "trip_purpose": scenario["trip_purpose"],
+        "economy_only": economy_only(scenario),
         "longest_leg_minutes": max(minutes for part in parts for minutes in part["legs"]),
         "part_minutes": [counted_minutes(part) for part in parts],
         "layover_minutes": list(itinerary["layover_minutes"]),

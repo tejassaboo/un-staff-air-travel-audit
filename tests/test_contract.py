@@ -70,7 +70,7 @@ def test_enums_are_closed_and_lower_case_or_codes() -> None:
     for cls in (TravelerCategory, TripPurpose, UnCabin):
         assert all(isinstance(member.value, str) and member.value == member.value.lower() for member in cls)
     assert all(member.value == member.name for member in UnViolation)
-    assert issubclass(contract.UnScenario, Enum) and len(contract.UnScenario) == 19
+    assert issubclass(contract.UnScenario, Enum) and len(contract.UnScenario) == 23
 
 
 def test_dates_and_stamps_say_their_format_and_amounts_their_unit() -> None:
